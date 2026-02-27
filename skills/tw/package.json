@@ -1,0 +1,12 @@
+{
+  "name": "tw-skill",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "oauth-1.0a": "^2.2.6",
+    "tsx": "^4.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
+  }
+}
