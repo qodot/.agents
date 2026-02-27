@@ -67,7 +67,7 @@ npx tsx {baseDir}/post.ts --text "Check this out!" --image /path/to/image.jpg
 사용자가 이 스킬을 호출하면:
 
 1. 사용자에게 **게시할 텍스트**를 물어본다
-2. **이미지 첨부 여부**를 물어본다 (첨부 시 파일 경로를 받는다)
+2. **이미지 첨부 여부**를 물어본다. 옵션은 2개만: `없음`, `Type something`(기본값, 파일 경로 직접 입력)
 3. `post.js`를 실행하여 X와 Threads에 동시 포스팅한다
 4. 결과(성공 URL 또는 에러)를 보고한다
 
