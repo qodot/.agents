@@ -1,4 +1,6 @@
 import { execSync } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { getModel } from "@mariozechner/pi-ai";
 import {
   AuthStorage,
@@ -24,7 +26,7 @@ const REVIEW_MODELS = [
   { name: "Claude Opus 4.6", provider: "anthropic", id: "claude-opus-4-6", thinking: "xhigh" as const },
 ];
 
-const SYNTHESIS_MODEL = { provider: "anthropic", id: "claude-sonnet-4-6", thinking: "high" as const };
+const SYNTHESIS_MODEL = { provider: "anthropic", id: "claude-opus-4-6", thinking: "high" as const };
 
 // ─── Helpers ────────────────────────────────────────────
 
@@ -203,20 +205,6 @@ ${reviews.map((r) => `## ${r.name}의 리뷰\n\n${r.review}`).join("\n\n---\n\n"
   return output;
 }
 
-// ─── Heartbeat ──────────────────────────────────────────
-
-function startHeartbeat(intervalMs = 5000): () => void {
-  let elapsed = 0;
-  const timer = setInterval(() => {
-    elapsed += intervalMs;
-    const mins = Math.floor(elapsed / 60000);
-    const secs = Math.floor((elapsed % 60000) / 1000);
-    const time = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-    log(`💓 리뷰 진행 중... (${time} 경과)`);
-  }, intervalMs);
-  return () => clearInterval(timer);
-}
-
 // ─── Main ───────────────────────────────────────────────
 
 async function main() {
@@ -238,7 +226,6 @@ async function main() {
   log("");
 
   // 1. 3개 모델 병렬 리뷰
-  const stopHeartbeat = startHeartbeat();
   const reviewPrompt = buildReviewPrompt(gitInfo);
   const reviewPromises = REVIEW_MODELS.map(async (m) => {
     log(`⏳ ${m.name} 리뷰 시작...`);
@@ -253,7 +240,6 @@ async function main() {
   });
 
   const reviews = await Promise.all(reviewPromises);
-  stopHeartbeat();
 
   const successCount = reviews.filter((r) => !r.review.startsWith("❌")).length;
   if (successCount === 0) {
@@ -262,10 +248,42 @@ async function main() {
   }
 
   // 2. 종합 리포트 생성
+  const successfulReviews = reviews.filter((r) => !r.review.startsWith("❌"));
   log(`\n📝 ${successCount}개 리뷰를 종합합니다...\n`);
-  const report = await synthesize(reviews.filter((r) => !r.review.startsWith("❌")));
+  const report = await synthesize(successfulReviews);
 
-  // 3. 출력
+  // 3. 리뷰 파일 저장
+  const reviewsDir = join(process.cwd(), "reviews");
+  mkdirSync(reviewsDir, { recursive: true });
+
+  const branchName = (TARGET_BRANCH === "HEAD"
+    ? execSync("git branch --show-current", { encoding: "utf-8" }).trim()
+    : TARGET_BRANCH
+  ).replaceAll("/", "-");
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const fileName = `${branchName}_${timestamp}.md`;
+  const filePath = join(reviewsDir, fileName);
+
+  const fileContent = [
+    `# 코드 리뷰: ${TARGET_BRANCH === "HEAD" ? branchName : TARGET_BRANCH}`,
+    `> 베이스: ${baseRef} | 생성: ${new Date().toISOString()}`,
+    FOCUS ? `> 집중 영역: ${FOCUS}` : "",
+    "",
+    "---",
+    "",
+    ...successfulReviews.map((r) => [`## ${r.name}의 리뷰`, "", r.review, "", "---", ""].flat()),
+    "## 종합 리포트",
+    "",
+    report,
+  ]
+    .filter((line) => line !== undefined)
+    .join("\n");
+
+  writeFileSync(filePath, fileContent, "utf-8");
+  log(`📄 리뷰 저장: ${filePath}`);
+
+  // 4. 출력
   console.log(report);
   log("\n✅ 코드 리뷰 완료");
 }

@@ -25,8 +25,10 @@ cd <skill_directory> && npm install
 
 ## 사용법
 
+프로젝트 루트(git 저장소)에서 실행해야 합니다. 글로벌 스킬이므로 tsx와 review.ts는 스킬 디렉토리의 절대 경로를 사용합니다.
+
 ```bash
-cd <skill_directory> && npx tsx review.ts [target_branch] [base_branch] [focus...]
+<skill_directory>/node_modules/.bin/tsx <skill_directory>/review.ts [target_branch] [base_branch] [focus...]
 ```
 
 ### 매개변수
@@ -56,7 +58,8 @@ npx tsx review.ts HEAD main "에러 핸들링과 타입 안전성"
 
 1. 대상/베이스 브랜치 간 git diff 추출
 2. 3개 모델에 병렬로 리뷰 요청 (각 모델은 read, bash 도구로 코드 컨텍스트 추가 확인 가능)
-3. 3개 리뷰 결과를 Claude Sonnet 4.6이 종합하여 최종 리포트 생성
+3. 3개 리뷰 결과를 Claude Opus 4.6이 종합하여 최종 리포트 생성
+4. 개별 리뷰 + 종합 리포트를 `reviews/{브랜치명}_{타임스탬프}.md`로 저장
 
 ## 주의사항
 
