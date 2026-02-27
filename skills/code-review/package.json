@@ -1,0 +1,11 @@
+{
+  "name": "code-review-skill",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "tsx": "*"
+  }
+}

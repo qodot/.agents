@@ -1,0 +1,40 @@
+# hana - AI 코딩 에이전트 글로벌 동기화 설정
+# https://github.com/qodot/hana
+
+[source]
+skills_path = ".agents/skills"
+skills_path_global = "~/.agents/skills"
+instruction_path = "AGENTS.md"
+instruction_path_global = "~/.agents/AGENTS.md"
+
+[target.claude]
+skills = true
+instructions = true
+skills_path = ".claude/skills"
+skills_path_global = ".claude/skills"
+instruction_path = "CLAUDE.md"
+instruction_path_global = ".claude/CLAUDE.md"
+
+[target.codex]
+skills = true
+instructions = true
+skills_path = ".agents/skills"
+skills_path_global = ".agents/skills"
+instruction_path = "AGENTS.md"
+instruction_path_global = ".codex/AGENTS.md"
+
+[target.pi]
+skills = true
+instructions = true
+skills_path = ".pi/skills"
+skills_path_global = ".pi/agent/skills"
+instruction_path = "AGENTS.md"
+instruction_path_global = ".pi/agent/AGENTS.md"
+
+[target.opencode]
+skills = true
+instructions = true
+skills_path = ".opencode/skills"
+skills_path_global = ".config/opencode/skills"
+instruction_path = "AGENTS.md"
+instruction_path_global = ".config/opencode/AGENTS.md"
