@@ -1,11 +1,11 @@
 ---
 name: code-review
-description: 멀티 모델 코드 리뷰. Codex 5.3, Gemini 3 Flash, Claude Opus 4.6 세 모델이 병렬로 리뷰하고 종합 리포트를 생성합니다. 코드 리뷰, PR 리뷰, diff 리뷰 요청 시 활성화됩니다.
+description: 멀티 모델 코드 리뷰. GPT 5.4, Gemini 3.1 Pro, Claude Opus 4.6 세 모델이 병렬로 리뷰하고 종합 리포트를 생성합니다. 코드 리뷰, PR 리뷰, diff 리뷰 요청 시 활성화됩니다.
 ---
 
 # 멀티 모델 코드 리뷰
 
-3개의 AI 모델(Codex 5.3, Gemini 3 Flash, Claude Opus 4.6)이 xhigh thinking으로 독립 리뷰 후, 결과를 종합하여 최종 리포트를 생성합니다.
+3개의 AI 모델(GPT 5.4, Gemini 3.1 Pro, Claude Opus 4.6)이 xhigh thinking으로 독립 리뷰 후, 결과를 종합하여 최종 리포트를 생성합니다.
 
 ## 설정 (최초 1회)
 

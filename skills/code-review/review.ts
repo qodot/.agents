@@ -21,9 +21,9 @@ const BASE_BRANCH = process.argv[3] || "main";
 const FOCUS = process.argv.slice(4).join(" ");
 
 const REVIEW_MODELS = [
-  { name: "Codex 5.3", provider: "openai", id: "gpt-5.3-codex", thinking: "xhigh" as const },
-  { name: "Gemini 3 Flash", provider: "google-antigravity", id: "gemini-3-flash", thinking: "xhigh" as const },
-  { name: "Claude Opus 4.6", provider: "anthropic", id: "claude-opus-4-6", thinking: "xhigh" as const },
+  { name: "GPT 5.4", provider: "openai", id: "gpt-5.4", thinking: "high" as const },
+  { name: "Gemini 3.1 Pro", provider: "google-antigravity", id: "gemini-3.1-pro-high", thinking: "high" as const },
+  { name: "Claude Opus 4.6", provider: "anthropic", id: "claude-opus-4-6", thinking: "high" as const },
 ];
 
 const SYNTHESIS_MODEL = { provider: "anthropic", id: "claude-opus-4-6", thinking: "high" as const };
@@ -73,7 +73,13 @@ function resolveRef(branch: string): string {
 }
 
 function findModel(provider: string, id: string) {
-  return getModel(provider, id) ?? modelRegistry.find(provider, id) ?? null;
+  const builtin = getModel(provider, id);
+  const registry = modelRegistry.find(provider, id);
+  const found = builtin ?? registry ?? null;
+  if (!found) {
+    log(`⚠️  findModel(${provider}, ${id}): builtin=${!!builtin}, registry=${!!registry}`);
+  }
+  return found;
 }
 
 function createMinimalResourceLoader(systemPrompt: string): ResourceLoader {
@@ -343,7 +349,13 @@ async function main() {
     log(`⏳ ${m.name} 리뷰 시작...`);
     try {
       const result = await runReview(m, reviewPrompt);
-      log(`✅ ${m.name} 리뷰 완료`);
+      if (result.review.startsWith("❌")) {
+        log(`❌ ${m.name} 리뷰 실패: ${result.review.slice(0, 200)}`);
+      } else if (!result.review.trim()) {
+        log(`⚠️  ${m.name} 리뷰 빈 응답 (output 길이: ${result.review.length})`);
+      } else {
+        log(`✅ ${m.name} 리뷰 완료 (${result.review.length} chars)`);
+      }
       return result;
     } catch (err) {
       log(`❌ ${m.name} 리뷰 실패: ${err}`);
