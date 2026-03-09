@@ -64,49 +64,78 @@ find . -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o
 
 {무엇을, 왜 하는지 1-2문장 요약}
 
+## 핵심 원칙
+
+**이 세 가지는 플랜 전체를 관통하는 최우선 원칙이다. 모든 설계 결정에서 이 원칙을 먼저 적용한다.**
+
+### 1. 함수형 프로그래밍
+
+- **순수 함수 우선**: 같은 입력에 항상 같은 출력. 부수효과(I/O, DB, API 호출 등)는 최외곽으로 밀어낸다
+- **불변성**: 데이터를 직접 변경하지 않는다. 새로운 값을 만들어 반환한다
+- **부수효과 격리**: 순수한 비즈니스 로직과 부수효과를 명확히 분리한다. 순수 함수가 코어, 부수효과가 셸
+- **선언적 표현**: 어떻게(how)가 아닌 무엇을(what) 기술. map/filter/reduce 등 선언적 조합을 우선한다
+
+### 2. 조합 가능한 인터페이스로서의 함수 시그니처
+
+- **단일 책임**: 한 함수는 한 가지 일만 한다. 이름만으로 무엇을 하는지 알 수 있어야 한다
+- **입출력 일관성**: 한 함수의 출력 타입이 다른 함수의 입력 타입과 자연스럽게 연결되도록 설계한다 (pipe/compose 가능)
+- **작은 함수, 넓은 조합**: 작고 명확한 함수들을 조합하여 복잡한 동작을 만든다. 큰 함수 하나보다 작은 함수 여러 개의 조합이 낫다
+- **의존성 주입**: 외부 의존성(DB, API 등)은 인자로 받는다. 함수 내부에서 전역 상태에 접근하지 않는다
+
+### 3. TDD (Red-Green-Refactor)
+
+- **테스트가 설계를 이끈다**: 구현 전에 테스트를 먼저 작성한다. 테스트가 함수의 계약(contract)을 정의한다
+- **Red → Green → Refactor**: 실패하는 테스트 작성 → 최소한의 코드로 통과 → 리팩토링. 이 사이클을 엄격히 지킨다
+- **리프 노드부터**: 의존성 없는 순수 함수를 먼저 테스트하고 구현한다. 상위 함수는 이미 검증된 하위 함수를 조합한다
+- **경계 케이스 우선**: 정상 케이스뿐 아니라 빈 입력, 에러, 엣지 케이스를 테스트에 반드시 포함한다
+
 ## 함수 설계
 
-플랜의 핵심. 문제를 해결하기 위한 함수들의 시그니처와 호출 트리를 설계한다.
+플랜의 핵심. 위 세 가지 원칙에 따라 함수들의 시그니처와 호출 트리를 설계한다.
 
 ### 시그니처 목록
 
-각 함수의 시그니처와 역할을 정의한다. 신규 함수는 `[NEW]`, 수정 함수는 `[MOD]`로 표시한다.
+각 함수의 시그니처와 역할을 정의한다. 신규 함수는 `[NEW]`, 수정 함수는 `[MOD]`로 표시한다. 각 함수에 순수/부수효과를 표시하여 어디에 부수효과가 있는지 한눈에 보이게 한다.
 
 \`\`\`ts
 // 📁 path/to/file.ts
-[NEW] async function processOrder(order: Order): Promise<OrderResult>
+[NEW] async function processOrder(order: Order): Promise<OrderResult>  // ⚡ 부수효과 (orchestrator)
 // 주문을 검증하고 결제를 실행한 뒤 결과를 반환한다
 
-[NEW] function validateOrder(order: Order): ValidationResult
+[NEW] function validateOrder(order: Order): ValidationResult  // ✅ 순수
 // 주문 데이터의 유효성을 검증한다
 
-[MOD] async function executePayment(amount: number, method: PaymentMethod): Promise<PaymentResult>
+[MOD] async function executePayment(amount: number, method: PaymentMethod): Promise<PaymentResult>  // ⚡ 부수효과
 // 기존: 카드만 지원 → 변경: 계좌이체 추가
 \`\`\`
 
 ### 호출 트리
 
-함수 간 호출 관계를 트리로 표현한다. 어떤 함수가 내부에서 어떤 헬퍼/모델 함수를 호출하는지 한눈에 보여준다. 각 함수에 입력 타입과 반환 타입을 명시하여 시그니처 목록을 참조하지 않아도 데이터 흐름을 파악할 수 있게 한다.
+함수 간 호출 관계를 트리로 표현한다. 어떤 함수가 내부에서 어떤 헬퍼/모델 함수를 호출하는지 한눈에 보여준다. 각 함수에 입력 타입과 반환 타입을 명시하여 시그니처 목록을 참조하지 않아도 데이터 흐름을 파악할 수 있게 한다. 순수 함수(✅)와 부수효과 함수(⚡)를 구분하여 부수효과의 경계를 시각적으로 드러낸다.
 
 \`\`\`
-processOrder(order: Order) -> OrderResult                      📁 orders/process.ts
-├── validateOrder(order: Order) -> ValidationResult            📁 orders/validate.ts
-│   ├── checkStock(items: OrderItem[]) -> StockResult          📁 inventory/stock.ts
-│   └── validateAddress(address: Address) -> bool              📁 shipping/address.ts
-├── executePayment(amount: number, method: PaymentMethod) -> PaymentResult  📁 payments/execute.ts [MOD]
-│   ├── chargeCard(card: Card, amount: number) -> PaymentResult             📁 payments/card.ts
-│   └── transferBank(account: BankAccount, amount: number) -> PaymentResult 📁 payments/bank.ts [NEW]
-└── createOrderRecord(order: Order, paymentResult: PaymentResult) -> OrderRecord  📁 orders/repository.ts
+processOrder(order: Order) -> OrderResult                      📁 orders/process.ts ⚡
+├── validateOrder(order: Order) -> ValidationResult            📁 orders/validate.ts ✅
+│   ├── checkStock(items: OrderItem[]) -> StockResult          📁 inventory/stock.ts ✅
+│   └── validateAddress(address: Address) -> bool              📁 shipping/address.ts ✅
+├── executePayment(amount: number, method: PaymentMethod) -> PaymentResult  📁 payments/execute.ts ⚡ [MOD]
+│   ├── chargeCard(card: Card, amount: number) -> PaymentResult             📁 payments/card.ts ⚡
+│   └── transferBank(account: BankAccount, amount: number) -> PaymentResult 📁 payments/bank.ts ⚡ [NEW]
+└── createOrderRecord(order: Order, paymentResult: PaymentResult) -> OrderRecord  📁 orders/repository.ts ⚡
 \`\`\`
 
 ## 실행 순서
 
-함수 트리의 리프 노드(의존성 없는 것)부터 루트를 향해 구현한다. 각 함수는 **테스트 코드를 먼저 작성**한 뒤 구현한다 (TDD). 테스트 코드 관련 스킬이 있으면 반드시 사용한다.
+함수 트리의 리프 노드(의존성 없는 순수 함수)부터 루트를 향해 구현한다. **순수 함수 → 조합 함수 → 부수효과 함수** 순서로, 각 함수마다 **Red-Green-Refactor** 사이클을 엄격히 따른다. 테스트 코드 관련 스킬이 있으면 반드시 사용한다.
 
-1. **Step 1**: {대상 함수들}
-   - 테스트 작성 → 구현 → 테스트 통과 확인
-2. **Step 2**: {대상 함수들}
-   - 테스트 작성 → 구현 → 테스트 통과 확인
+1. **Step 1**: {리프 순수 함수들} ✅
+   - 🔴 Red: 실패하는 테스트 작성 (정상 + 경계 케이스)
+   - 🟢 Green: 테스트를 통과하는 최소한의 구현
+   - 🔵 Refactor: 중복 제거, 명확성 개선
+2. **Step 2**: {조합/상위 함수들} ✅
+   - 🔴 Red → 🟢 Green → 🔵 Refactor
+3. **Step N**: {부수효과 함수들} ⚡
+   - 🔴 Red → 🟢 Green → 🔵 Refactor (외부 의존성은 mock/stub)
 ...
 
 ## Phase 4: 저장
