@@ -86,17 +86,17 @@ find . -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o
 
 ### 호출 트리
 
-함수 간 호출 관계를 트리로 표현한다. 어떤 함수가 내부에서 어떤 헬퍼/모델 함수를 호출하는지 한눈에 보여준다.
+함수 간 호출 관계를 트리로 표현한다. 어떤 함수가 내부에서 어떤 헬퍼/모델 함수를 호출하는지 한눈에 보여준다. 각 함수에 입력 타입과 반환 타입을 명시하여 시그니처 목록을 참조하지 않아도 데이터 흐름을 파악할 수 있게 한다.
 
 \`\`\`
-processOrder(order)                          📁 orders/process.ts
-├── validateOrder(order)                     📁 orders/validate.ts
-│   ├── checkStock(order.items)              📁 inventory/stock.ts
-│   └── validateAddress(order.address)       📁 shipping/address.ts
-├── executePayment(amount, method)           📁 payments/execute.ts [MOD]
-│   ├── chargeCard(card, amount)             📁 payments/card.ts
-│   └── transferBank(account, amount)        📁 payments/bank.ts [NEW]
-└── createOrderRecord(order, paymentResult)  📁 orders/repository.ts
+processOrder(order: Order) -> OrderResult                      📁 orders/process.ts
+├── validateOrder(order: Order) -> ValidationResult            📁 orders/validate.ts
+│   ├── checkStock(items: OrderItem[]) -> StockResult          📁 inventory/stock.ts
+│   └── validateAddress(address: Address) -> bool              📁 shipping/address.ts
+├── executePayment(amount: number, method: PaymentMethod) -> PaymentResult  📁 payments/execute.ts [MOD]
+│   ├── chargeCard(card: Card, amount: number) -> PaymentResult             📁 payments/card.ts
+│   └── transferBank(account: BankAccount, amount: number) -> PaymentResult 📁 payments/bank.ts [NEW]
+└── createOrderRecord(order: Order, paymentResult: PaymentResult) -> OrderRecord  📁 orders/repository.ts
 \`\`\`
 
 ## 실행 순서
