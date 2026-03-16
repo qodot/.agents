@@ -100,9 +100,7 @@ python3 {baseDir}/scripts/fetch-issue.py "<sentry-issue-url>"
 - **선택**: 후보 {N}번 - [해결책 제목]
 ```
 
-### 5단계: 브랜치 생성 및 해결책 적용
-
-확정된 해결책을 기반으로:
+### 5단계: 브랜치 생성 및 플래닝
 
 1. **브랜치 생성**: `{projectname}/{gituser}/{short-id}` 형식으로 새 브랜치를 만듭니다.
    - `{projectname}`: 현재 프로젝트 디렉토리명 (`basename $(pwd)`)
@@ -111,19 +109,25 @@ python3 {baseDir}/scripts/fetch-issue.py "<sentry-issue-url>"
    ```bash
    git switch -c "{projectname}/{gituser}/{short-id}"
    ```
-2. **코드 수정**: 선택된 해결책에 따라 `edit` 도구로 코드를 변경합니다.
-3. **변경 사항 커밋**: 수정된 파일을 커밋합니다.
+2. **coding-planner 스킬 실행**: 채택된 해결책을 기반으로 `coding-planner` 스킬을 사용합니다.
+   - **Phase 1(인터뷰) 생략**: Sentry 분석 결과와 채택된 해결책이 이미 목표와 완료 조건을 충족합니다.
+   - **Phase 2부터 시작**: 코드베이스 분석 → 플랜 생성 → 저장 → 실행 여부 확인 순서를 따릅니다.
+
+### 6단계: 커밋 및 PR
+
+coding-planner의 실행이 완료되면:
+
+1. **에러 파일 포함 커밋**: `.agents/errors/{short-id}.md`를 포함하여 커밋합니다.
    ```bash
    git add -A
    git commit -m "fix: resolve sentry issue {short-id}"
    ```
-4. **에러 파일 커밋**: `.agents/errors/{short-id}.md`도 함께 커밋합니다.
-5. **PR 생성**: GitHub PR을 생성합니다.
+2. **PR 생성**:
    ```bash
    git push -u origin HEAD
    gh pr create --title "fix: resolve sentry issue {short-id}" --body "Sentry Issue: {sentry-issue-url}"
    ```
-6. **Sentry 이슈에 PR 연결**: PR URL을 Sentry 이슈에 코멘트로 남깁니다.
+3. **Sentry 이슈에 PR 연결**:
    ```bash
    python3 {baseDir}/scripts/link-pr.py "<sentry-issue-url>" "<pr-url>"
    ```
