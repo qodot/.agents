@@ -52,11 +52,14 @@ gh api repos/indentcorp/backend/releases --jq '.[] | select(.draft == true and (
 {PR 목록 - bullet point list}
 ```
 
+- 불릿은 `•` (유니코드 bullet)를 사용한다. Slack mrkdwn은 `- `를 리스트로 렌더링하지 않는다.
+- PR 번호는 GitHub PR 링크로 변환한다. Slack 링크 서식: `<URL|표시텍스트>`
+
 예시:
 ```
 socialscan 배포합니다.
-- [SOCIALSCAN-56V] collect_video_task에서 PrivateUserError 처리 추가 (#14696)
-- [SOCIALSCAN-56Y] TikTok 동영상 조회 시 10203, 10231 에러 코드 NotFoundError 처리 (#14699)
+• [SOCIALSCAN-56V] collect_video_task에서 PrivateUserError 처리 추가 (<https://github.com/indentcorp/backend/pull/14696|#14696>)
+• [SOCIALSCAN-56Y] TikTok 동영상 조회 시 10203, 10231 에러 코드 NotFoundError 처리 (<https://github.com/indentcorp/backend/pull/14699|#14699>)
 ```
 
 ```bash
