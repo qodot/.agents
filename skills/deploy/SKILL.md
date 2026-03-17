@@ -55,8 +55,8 @@ gh api repos/indentcorp/backend/releases --jq '.[] | select(.draft == true and (
 예시:
 ```
 socialscan 배포합니다.
-• [SOCIALSCAN-56V] collect_video_task에서 PrivateUserError 처리 추가 (#14696)
-• [SOCIALSCAN-56Y] TikTok 동영상 조회 시 10203, 10231 에러 코드 NotFoundError 처리 (#14699)
+- [SOCIALSCAN-56V] collect_video_task에서 PrivateUserError 처리 추가 (#14696)
+- [SOCIALSCAN-56Y] TikTok 동영상 조회 시 10203, 10231 에러 코드 NotFoundError 처리 (#14699)
 ```
 
 ```bash
