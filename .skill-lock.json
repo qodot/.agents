@@ -1,0 +1,86 @@
+{
+  "version": 3,
+  "skills": {
+    "agent-channelbot": {
+      "source": "devxoul/agent-messenger",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
+      "skillPath": "skills/agent-channelbot/SKILL.md",
+      "skillFolderHash": "e51ed656522a42381936d1601bc71a8e12d39c98",
+      "pluginName": "agent-messenger",
+      "installedAt": "2026-03-18T03:55:27.144Z",
+      "updatedAt": "2026-03-18T03:55:27.144Z"
+    },
+    "agent-discord": {
+      "source": "devxoul/agent-messenger",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
+      "skillPath": "skills/agent-discord/SKILL.md",
+      "skillFolderHash": "7ad4d35bca67f432ffaf0ae1779fdaf4ce426068",
+      "pluginName": "agent-messenger",
+      "installedAt": "2026-03-18T03:55:27.880Z",
+      "updatedAt": "2026-03-18T03:55:27.880Z"
+    },
+    "agent-discordbot": {
+      "source": "devxoul/agent-messenger",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
+      "skillPath": "skills/agent-discordbot/SKILL.md",
+      "skillFolderHash": "cb99a1c7a8ded6b2dd633349dbf7049a0f6e39c3",
+      "pluginName": "agent-messenger",
+      "installedAt": "2026-03-18T03:55:28.410Z",
+      "updatedAt": "2026-03-18T03:55:28.410Z"
+    },
+    "agent-slack": {
+      "source": "devxoul/agent-messenger",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
+      "skillPath": "skills/agent-slack/SKILL.md",
+      "skillFolderHash": "e528ebfc7d0a13a0aea8befb6c839e7160d53582",
+      "pluginName": "agent-messenger",
+      "installedAt": "2026-03-18T03:55:28.905Z",
+      "updatedAt": "2026-03-18T03:55:28.905Z"
+    },
+    "agent-slackbot": {
+      "source": "devxoul/agent-messenger",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
+      "skillPath": "skills/agent-slackbot/SKILL.md",
+      "skillFolderHash": "5fbc9bfae55b767b7c3fb63333e5945ea4e85049",
+      "pluginName": "agent-messenger",
+      "installedAt": "2026-03-18T03:55:29.459Z",
+      "updatedAt": "2026-03-18T03:55:29.459Z"
+    },
+    "agent-teams": {
+      "source": "devxoul/agent-messenger",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
+      "skillPath": "skills/agent-teams/SKILL.md",
+      "skillFolderHash": "f582741afadf60355f1b8ed4ad25599ea3074a0b",
+      "pluginName": "agent-messenger",
+      "installedAt": "2026-03-18T03:55:29.877Z",
+      "updatedAt": "2026-03-18T03:55:29.877Z"
+    },
+    "vibe-notion": {
+      "source": "devxoul/vibe-notion",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/vibe-notion.git",
+      "skillPath": "skills/vibe-notion/SKILL.md",
+      "skillFolderHash": "b04802e98387c250638cdd8145a1fc5ee6d4a378",
+      "pluginName": "vibe-notion",
+      "installedAt": "2026-03-18T03:55:38.332Z",
+      "updatedAt": "2026-03-18T03:55:38.332Z"
+    },
+    "vibe-notionbot": {
+      "source": "devxoul/vibe-notion",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/devxoul/vibe-notion.git",
+      "skillPath": "skills/vibe-notionbot/SKILL.md",
+      "skillFolderHash": "fb860c005fe553c5b178172ca72cdfc82fbc9b5f",
+      "pluginName": "vibe-notion",
+      "installedAt": "2026-03-18T03:55:38.724Z",
+      "updatedAt": "2026-03-18T03:55:38.724Z"
+    }
+  },
+  "dismissed": {}
+}
