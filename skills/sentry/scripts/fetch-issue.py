@@ -137,10 +137,10 @@ def main():
     org_slug = extract_org_slug(url)
 
     # 1. 이슈 상세 조회
-    issue = api_request(f"issues/{issue_id}/")
+    issue = api_request(f"issues/{issue_id}/", token)
 
     # 2. 최신 이벤트 조회 (stacktrace 포함)
-    latest_event = api_request(f"issues/{issue_id}/events/latest/")
+    latest_event = api_request(f"issues/{issue_id}/events/latest/", token)
 
     # === 출력 ===
     print("=" * 80)
