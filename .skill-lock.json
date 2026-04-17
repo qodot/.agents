@@ -16,250 +16,243 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
       "skillPath": "skills/agent-discord/SKILL.md",
-      "skillFolderHash": "7ad4d35bca67f432ffaf0ae1779fdaf4ce426068",
-      "pluginName": "agent-messenger",
+      "skillFolderHash": "64f4373d3b08fd61d1b6e7b686c84a9c7239df95",
       "installedAt": "2026-03-18T03:55:27.880Z",
-      "updatedAt": "2026-03-18T03:57:44.482Z"
+      "updatedAt": "2026-04-16T04:20:58.610Z"
     },
     "agent-discordbot": {
       "source": "devxoul/agent-messenger",
       "sourceType": "github",
       "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
       "skillPath": "skills/agent-discordbot/SKILL.md",
-      "skillFolderHash": "cb99a1c7a8ded6b2dd633349dbf7049a0f6e39c3",
-      "pluginName": "agent-messenger",
+      "skillFolderHash": "f7e2ffdab353192e8e89a5e935d8c42a813c4d1f",
       "installedAt": "2026-03-18T03:55:28.410Z",
-      "updatedAt": "2026-03-18T03:57:45.396Z"
+      "updatedAt": "2026-04-16T04:21:01.436Z"
     },
     "agent-slack": {
       "source": "devxoul/agent-messenger",
       "sourceType": "github",
       "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
       "skillPath": "skills/agent-slack/SKILL.md",
-      "skillFolderHash": "e528ebfc7d0a13a0aea8befb6c839e7160d53582",
-      "pluginName": "agent-messenger",
+      "skillFolderHash": "1fc4f260df565a8bb02341c1b97923994392ce01",
       "installedAt": "2026-03-18T03:55:28.905Z",
-      "updatedAt": "2026-03-18T03:57:45.916Z"
+      "updatedAt": "2026-04-16T04:21:04.713Z"
     },
     "agent-slackbot": {
       "source": "devxoul/agent-messenger",
       "sourceType": "github",
       "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
       "skillPath": "skills/agent-slackbot/SKILL.md",
-      "skillFolderHash": "5fbc9bfae55b767b7c3fb63333e5945ea4e85049",
-      "pluginName": "agent-messenger",
+      "skillFolderHash": "dad6b5604df032678a7d9c21a6460d1974cb21e8",
       "installedAt": "2026-03-18T03:55:29.459Z",
-      "updatedAt": "2026-03-18T03:57:46.327Z"
+      "updatedAt": "2026-04-16T04:21:07.540Z"
     },
     "agent-teams": {
       "source": "devxoul/agent-messenger",
       "sourceType": "github",
       "sourceUrl": "https://github.com/devxoul/agent-messenger.git",
       "skillPath": "skills/agent-teams/SKILL.md",
-      "skillFolderHash": "f582741afadf60355f1b8ed4ad25599ea3074a0b",
-      "pluginName": "agent-messenger",
+      "skillFolderHash": "6c629d3a6b1d2b7371c05e0dfc2b75638424aaea",
       "installedAt": "2026-03-18T03:55:29.877Z",
-      "updatedAt": "2026-03-18T03:57:46.717Z"
+      "updatedAt": "2026-04-16T04:21:28.742Z"
     },
     "vibe-notion": {
       "source": "devxoul/vibe-notion",
       "sourceType": "github",
       "sourceUrl": "https://github.com/devxoul/vibe-notion.git",
       "skillPath": "skills/vibe-notion/SKILL.md",
-      "skillFolderHash": "b04802e98387c250638cdd8145a1fc5ee6d4a378",
-      "pluginName": "vibe-notion",
+      "skillFolderHash": "7cf481a07da3628d319e72ea1c9cb045814caa2c",
       "installedAt": "2026-03-18T03:55:38.332Z",
-      "updatedAt": "2026-03-18T03:57:53.251Z"
+      "updatedAt": "2026-04-16T04:21:31.601Z"
     },
     "vibe-notionbot": {
       "source": "devxoul/vibe-notion",
       "sourceType": "github",
       "sourceUrl": "https://github.com/devxoul/vibe-notion.git",
       "skillPath": "skills/vibe-notionbot/SKILL.md",
-      "skillFolderHash": "fb860c005fe553c5b178172ca72cdfc82fbc9b5f",
-      "pluginName": "vibe-notion",
+      "skillFolderHash": "ea010aaea9a43749efae744d43f8bd6f49a1f0c8",
       "installedAt": "2026-03-18T03:55:38.724Z",
-      "updatedAt": "2026-03-18T03:57:53.698Z"
+      "updatedAt": "2026-04-16T04:21:34.351Z"
     },
     "gws-calendar": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-calendar/SKILL.md",
-      "skillFolderHash": "80c98ff8dcf0c96f5d22e9e34101968d42c47135",
+      "skillFolderHash": "62a27859dbdf798c1f7288d04750e743283a6b4f",
       "installedAt": "2026-03-19T09:29:06.487Z",
-      "updatedAt": "2026-03-19T09:29:06.487Z"
+      "updatedAt": "2026-04-16T04:21:36.357Z"
     },
     "gws-calendar-agenda": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-calendar-agenda/SKILL.md",
-      "skillFolderHash": "b4179692032222becf60ecf659091959ae12dd6a",
+      "skillFolderHash": "f79ea98b1c11ae13701d100967d6042872fd736d",
       "installedAt": "2026-03-19T09:29:06.991Z",
-      "updatedAt": "2026-03-19T09:29:06.991Z"
+      "updatedAt": "2026-04-16T04:21:38.186Z"
     },
     "gws-calendar-insert": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-calendar-insert/SKILL.md",
-      "skillFolderHash": "5143c10276c79b55862adac5a24dda16a7745365",
+      "skillFolderHash": "1f6f872119aee5b19e36993933da1d61e9c09863",
       "installedAt": "2026-03-19T09:29:07.453Z",
-      "updatedAt": "2026-03-19T09:29:07.453Z"
+      "updatedAt": "2026-04-16T04:21:39.981Z"
     },
     "gws-docs": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-docs/SKILL.md",
-      "skillFolderHash": "a7da40857bfbaf865a75d981257a7b9624827e79",
+      "skillFolderHash": "455f7468d4a2e3b0b352fbd7ad0937354427af82",
       "installedAt": "2026-03-19T09:29:08.019Z",
-      "updatedAt": "2026-03-19T09:29:08.019Z"
+      "updatedAt": "2026-04-16T04:21:42.320Z"
     },
     "gws-docs-write": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-docs-write/SKILL.md",
-      "skillFolderHash": "39890a5584a66860b173ec3d1380eb8d7f347ef7",
+      "skillFolderHash": "6a9ce7b7d982afc5cead13d64a85fe1875d411e9",
       "installedAt": "2026-03-19T09:29:08.501Z",
-      "updatedAt": "2026-03-19T09:29:08.501Z"
+      "updatedAt": "2026-04-16T04:21:44.294Z"
     },
     "gws-drive": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-drive/SKILL.md",
-      "skillFolderHash": "93ffc07d88a028ed2fb1b17741214ad572559c20",
+      "skillFolderHash": "46b7e75840ff26db80b6b74238e423dfa4b75c11",
       "installedAt": "2026-03-19T09:29:09.038Z",
-      "updatedAt": "2026-03-19T09:29:09.038Z"
+      "updatedAt": "2026-04-16T04:21:57.015Z"
     },
     "gws-drive-upload": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-drive-upload/SKILL.md",
-      "skillFolderHash": "81211255691edf50416a622005b7b1ee77bdf826",
+      "skillFolderHash": "a9526bcb2b1b1e672d881e1788e9bc76539fbcab",
       "installedAt": "2026-03-19T09:29:09.548Z",
-      "updatedAt": "2026-03-19T09:29:09.548Z"
+      "updatedAt": "2026-04-16T04:21:48.020Z"
     },
     "gws-forms": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-forms/SKILL.md",
-      "skillFolderHash": "cbb1092a6878ef4bed936b241eb96c8795e963b0",
+      "skillFolderHash": "eed415975407cd92db67a743992f436a56bec2d1",
       "installedAt": "2026-03-19T09:29:09.952Z",
-      "updatedAt": "2026-03-19T09:29:09.952Z"
+      "updatedAt": "2026-04-16T04:21:49.736Z"
     },
     "gws-gmail": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-gmail/SKILL.md",
-      "skillFolderHash": "2431e22859f83f99cdb0675368b314310fc99790",
+      "skillFolderHash": "95c83c1280def63651f99025fa707bc0e4781a79",
       "installedAt": "2026-03-19T09:29:10.420Z",
-      "updatedAt": "2026-03-19T09:29:10.420Z"
+      "updatedAt": "2026-04-16T04:21:51.683Z"
     },
     "gws-gmail-send": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-gmail-send/SKILL.md",
-      "skillFolderHash": "cc6e6723ca97c7504550945d8412543387689092",
+      "skillFolderHash": "b80148cb44ba92558c4842251c4fd111b9efda0a",
       "installedAt": "2026-03-19T09:29:10.847Z",
-      "updatedAt": "2026-03-19T09:29:10.847Z"
+      "updatedAt": "2026-04-16T04:21:59.393Z"
     },
     "gws-gmail-triage": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-gmail-triage/SKILL.md",
-      "skillFolderHash": "44f2b0eb95a83389272b68791f4c918aaae40f2d",
+      "skillFolderHash": "083258f448ed51fd951b0e85fc35d9da3aaa73b3",
       "installedAt": "2026-03-19T09:29:11.332Z",
-      "updatedAt": "2026-03-19T09:29:11.332Z"
+      "updatedAt": "2026-04-16T04:22:01.154Z"
     },
     "gws-gmail-watch": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-gmail-watch/SKILL.md",
-      "skillFolderHash": "e2633ddda7ece4287b681062d5da415f22e52e2c",
+      "skillFolderHash": "5bfb574866f4c0c9e654ec3caddc37b3f36b1cd6",
       "installedAt": "2026-03-19T09:29:11.939Z",
-      "updatedAt": "2026-03-19T09:29:11.939Z"
+      "updatedAt": "2026-04-16T04:22:03.207Z"
     },
     "gws-keep": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-keep/SKILL.md",
-      "skillFolderHash": "94cca7a5868999779e6cdcf57f6fa39affe0d26d",
+      "skillFolderHash": "003931662b2ea59f0a362c0a2dea4968a06fe456",
       "installedAt": "2026-03-19T09:29:12.335Z",
-      "updatedAt": "2026-03-19T09:29:12.335Z"
+      "updatedAt": "2026-04-16T04:22:05.411Z"
     },
     "gws-meet": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-meet/SKILL.md",
-      "skillFolderHash": "1e78a235f490eefa4bfbe57aeefbc8f11f12b2cf",
+      "skillFolderHash": "bbd710f059a17a73b63ce2933c1c27e2490a6577",
       "installedAt": "2026-03-19T09:29:12.716Z",
-      "updatedAt": "2026-03-19T09:29:12.716Z"
+      "updatedAt": "2026-04-16T04:22:07.244Z"
     },
     "gws-shared": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-shared/SKILL.md",
-      "skillFolderHash": "2ad50eba326c83339cd7c08704a85ff62b504eb0",
+      "skillFolderHash": "50b50dd1d65c51835c599745c943ada18b187a86",
       "installedAt": "2026-03-19T09:29:13.234Z",
-      "updatedAt": "2026-03-19T09:29:13.234Z"
+      "updatedAt": "2026-04-16T04:22:09.423Z"
     },
     "gws-sheets": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-sheets/SKILL.md",
-      "skillFolderHash": "15288c36ef2a904ff016b49cc0449b6c91d57e0b",
+      "skillFolderHash": "50758ea65d12833e48361aa541c0acaff0d96f67",
       "installedAt": "2026-03-19T09:29:13.849Z",
-      "updatedAt": "2026-03-19T09:29:13.849Z"
+      "updatedAt": "2026-04-16T04:22:11.173Z"
     },
     "gws-sheets-append": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-sheets-append/SKILL.md",
-      "skillFolderHash": "2804dc2fd66c3dfe642434064451841bf10ba92f",
+      "skillFolderHash": "943def878600c64ad8eaede62762d3f9523e127a",
       "installedAt": "2026-03-19T09:29:14.337Z",
-      "updatedAt": "2026-03-19T09:29:14.337Z"
+      "updatedAt": "2026-04-16T04:22:12.702Z"
     },
     "gws-sheets-read": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-sheets-read/SKILL.md",
-      "skillFolderHash": "2320287e5499eb709c8e48fe47510d55d60789e6",
+      "skillFolderHash": "e7073d8b029f7b1a7659795f6fe13a5f86f78f6d",
       "installedAt": "2026-03-19T09:29:14.794Z",
-      "updatedAt": "2026-03-19T09:29:14.794Z"
+      "updatedAt": "2026-04-16T04:22:14.249Z"
     },
     "gws-slides": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-slides/SKILL.md",
-      "skillFolderHash": "ee8f31f1e3691a8c3c75942b450a8653205bf0be",
+      "skillFolderHash": "a1aef615fb11bcce264c1eff679d15c3d2a73f10",
       "installedAt": "2026-03-19T09:29:15.217Z",
-      "updatedAt": "2026-03-19T09:29:15.217Z"
+      "updatedAt": "2026-04-16T04:22:16.926Z"
     },
     "gws-tasks": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/googleworkspace/cli.git",
       "skillPath": "skills/gws-tasks/SKILL.md",
-      "skillFolderHash": "cf866728a6ef777367002d2f43291d0096c950c4",
+      "skillFolderHash": "2eb991e7237379dfbf9e7ec6f7fbf7f0497e5ae7",
       "installedAt": "2026-03-19T09:29:15.899Z",
-      "updatedAt": "2026-03-19T09:29:15.899Z"
+      "updatedAt": "2026-04-16T04:22:19.504Z"
     }
   },
   "dismissed": {}

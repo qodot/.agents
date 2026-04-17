@@ -16,11 +16,11 @@ agent-slack message send general "Deployment completed successfully!"
 
 # With error handling
 RESULT=$(agent-slack message send general "Hello world")
-if echo "$RESULT" | jq -e '.success' > /dev/null; then
-  echo "Message sent!"
-else
-  echo "Failed: $(echo "$RESULT" | jq -r '.error.message')"
+if [ -z "$RESULT" ] || ! echo "$RESULT" | jq -e '.ts' > /dev/null 2>&1; then
+  echo "Failed: $(echo "$RESULT" | jq -r '.error // "unknown_error"')"
   exit 1
+else
+  echo "Message sent: $(echo "$RESULT" | jq -r '.ts')"
 fi
 ```
 
@@ -39,12 +39,12 @@ LAST_TS=""
 while true; do
   # Get latest message
   MESSAGES=$(agent-slack message list "$CHANNEL" --limit 1)
-  LATEST_TS=$(echo "$MESSAGES" | jq -r '.data.messages[0].ts')
+  LATEST_TS=$(echo "$MESSAGES" | jq -r '.[0].ts')
 
   # Check if new message
   if [ "$LATEST_TS" != "$LAST_TS" ] && [ -n "$LAST_TS" ]; then
-    TEXT=$(echo "$MESSAGES" | jq -r '.data.messages[0].text')
-    USER=$(echo "$MESSAGES" | jq -r '.data.messages[0].user')
+    TEXT=$(echo "$MESSAGES" | jq -r '.[0].text')
+    USER=$(echo "$MESSAGES" | jq -r '.[0].user')
 
     echo "New message from $USER: $TEXT"
 
@@ -62,7 +62,7 @@ done
 
 **When to use**: Building a simple bot that reacts to messages.
 
-**Limitations**: Polling-based, not real-time. For production bots, use Slack's Events API.
+**Limitations**: Polling-based, not real-time. For real-time events, use the `SlackListener` SDK (see SKILL.md → SDK: Real-Time Events).
 
 ## Pattern 3: Get Workspace Overview
 
@@ -71,28 +71,25 @@ done
 ```bash
 #!/bin/bash
 
-# Get full snapshot
+# Get brief snapshot (default — fast, minimal output)
 SNAPSHOT=$(agent-slack snapshot)
 
 # Extract key information
-WORKSPACE_NAME=$(echo "$SNAPSHOT" | jq -r '.data.workspace.name')
-CHANNEL_COUNT=$(echo "$SNAPSHOT" | jq -r '.data.channels | length')
-USER_COUNT=$(echo "$SNAPSHOT" | jq -r '.data.users | length')
+WORKSPACE_NAME=$(echo "$SNAPSHOT" | jq -r '.workspace.name')
+CHANNEL_COUNT=$(echo "$SNAPSHOT" | jq -r '.channels | length')
 
 echo "Workspace: $WORKSPACE_NAME"
 echo "Channels: $CHANNEL_COUNT"
-echo "Users: $USER_COUNT"
 
 # List all channels
 echo -e "\nChannels:"
 echo "$SNAPSHOT" | jq -r '.channels[] | "  \(.name) (\(.id))"'
 
-# List recent activity
-echo -e "\nRecent messages:"
-echo "$SNAPSHOT" | jq -r '.data.messages[] | "  \(.channel_name): \(.text[0:50])"'
+# Then drill into specific channels for messages
+agent-slack message list general --limit 10
 ```
 
-**When to use**: Initial context gathering, status reports, workspace summaries.
+**When to use**: Initial context gathering, status reports, workspace summaries. Start with brief snapshot, then use targeted commands for details.
 
 ## Pattern 4: Thread Conversation
 
@@ -105,7 +102,7 @@ CHANNEL="general"
 
 # Send initial message
 RESULT=$(agent-slack message send "$CHANNEL" "Starting deployment...")
-THREAD_TS=$(echo "$RESULT" | jq -r '.data.ts')
+THREAD_TS=$(echo "$RESULT" | jq -r '.ts')
 
 # Send updates in thread
 agent-slack message send "$CHANNEL" "Building application..." --thread "$THREAD_TS"
@@ -135,13 +132,13 @@ CHANNEL="support"
 MESSAGES=$(agent-slack message list "$CHANNEL" --limit 50)
 
 # Find messages containing "urgent"
-URGENT_MESSAGES=$(echo "$MESSAGES" | jq -r '.data.messages[] | select(.text | contains("urgent"))')
+URGENT_MESSAGES=$(echo "$MESSAGES" | jq -r '.[] | select(.text | contains("urgent"))')
 
 # Process each urgent message
 echo "$URGENT_MESSAGES" | jq -c '.' | while read -r msg; do
-  TS=$(echo "$msg" | jq -r '.ts')
-  TEXT=$(echo "$msg" | jq -r '.text')
-  USER=$(echo "$msg" | jq -r '.user')
+  TS=$(echo "$msg" | jq -r '.ts // ""')
+  TEXT=$(echo "$msg" | jq -r '.text // ""')
+  USER=$(echo "$msg" | jq -r '.user // ""')
 
   echo "Found urgent message from $USER: $TEXT"
 
@@ -169,10 +166,10 @@ for channel in "${CHANNELS[@]}"; do
   echo "Posting to #$channel..."
   RESULT=$(agent-slack message send "$channel" "$MESSAGE")
 
-  if echo "$RESULT" | jq -e '.success' > /dev/null; then
-    echo "  ✓ Posted to #$channel"
-  else
+  if echo "$RESULT" | jq -e '.error' > /dev/null 2>&1; then
     echo "  ✗ Failed to post to #$channel"
+  else
+    echo "  ✓ Posted to #$channel"
   fi
 
   # Rate limit: Don't spam Slack API
@@ -195,8 +192,11 @@ REPORT_FILE="./daily-report.pdf"
 # Upload file
 UPLOAD_RESULT=$(agent-slack file upload "$CHANNEL" "$REPORT_FILE")
 
-if echo "$UPLOAD_RESULT" | jq -e '.success' > /dev/null; then
-  FILE_ID=$(echo "$UPLOAD_RESULT" | jq -r '.data.id')
+if echo "$UPLOAD_RESULT" | jq -e '.error' > /dev/null 2>&1; then
+  echo "Upload failed: $(echo "$UPLOAD_RESULT" | jq -r '.error')"
+  exit 1
+else
+  FILE_ID=$(echo "$UPLOAD_RESULT" | jq -r '.id')
   echo "File uploaded: $FILE_ID"
 
   # Send context message
@@ -204,9 +204,6 @@ if echo "$UPLOAD_RESULT" | jq -e '.success' > /dev/null; then
   • 95% test coverage
   • 3 bugs fixed
   • 2 new features deployed"
-else
-  echo "Upload failed: $(echo "$UPLOAD_RESULT" | jq -r '.error.message')"
-  exit 1
 fi
 ```
 
@@ -252,7 +249,7 @@ USERNAME="john.doe"
 
 # Get user info
 USERS=$(agent-slack user list)
-USER_ID=$(echo "$USERS" | jq -r ".data.users[] | select(.name==\"$USERNAME\") | .id")
+USER_ID=$(echo "$USERS" | jq -r ".[] | select(.name==\"$USERNAME\") | .id")
 
 if [ -z "$USER_ID" ]; then
   echo "User $USERNAME not found"
@@ -278,7 +275,7 @@ CHANNEL="deployments"
 
 # Send deployment message
 RESULT=$(agent-slack message send "$CHANNEL" "Deploying v2.1.0 to production...")
-MSG_TS=$(echo "$RESULT" | jq -r '.data.ts')
+MSG_TS=$(echo "$RESULT" | jq -r '.ts')
 
 # Mark as in-progress
 agent-slack reaction add "$CHANNEL" "$MSG_TS" hourglass_flowing_sand
@@ -314,20 +311,20 @@ send_with_retry() {
 
     RESULT=$(agent-slack message send "$channel" "$message")
 
-    if echo "$RESULT" | jq -e '.success' > /dev/null; then
+    if echo "$RESULT" | jq -e '.ts' > /dev/null 2>&1; then
       echo "Message sent successfully!"
       return 0
     fi
 
-    ERROR_CODE=$(echo "$RESULT" | jq -r '.error.code')
+    ERROR=$(echo "$RESULT" | jq -r '.error // "unknown"')
 
     # Don't retry on certain errors
-    if [ "$ERROR_CODE" = "INVALID_CHANNEL" ]; then
+    if [ "$ERROR" = "channel_not_found" ]; then
       echo "Channel not found - not retrying"
       return 1
     fi
 
-    echo "Failed: $(echo "$RESULT" | jq -r '.error.message')"
+    echo "Failed: $ERROR"
 
     if [ $attempt -lt $max_attempts ]; then
       sleep $((attempt * 2))  # Exponential backoff
@@ -364,7 +361,7 @@ MESSAGES=$(agent-slack message list "$CHANNEL" --limit 100)
 
 # Filter messages from last 24 hours
 RECENT=$(echo "$MESSAGES" | jq --arg oldest "$OLDEST_TS" '
-  .data.messages[] |
+  .[] |
   select((.ts | tonumber) > ($oldest | tonumber))
 ')
 
@@ -413,7 +410,7 @@ if [ "$DISK_USAGE" -gt 80 ]; then
 
   # Add urgent reaction
   RESULT=$(agent-slack message list "$CHANNEL" --limit 1)
-  MSG_TS=$(echo "$RESULT" | jq -r '.data.messages[0].ts')
+  MSG_TS=$(echo "$RESULT" | jq -r '.[0].ts')
   agent-slack reaction add "$CHANNEL" "$MSG_TS" rotating_light
 fi
 ```
@@ -427,10 +424,10 @@ fi
 ```bash
 # Good
 RESULT=$(agent-slack message send general "Hello")
-if echo "$RESULT" | jq -e '.success' > /dev/null; then
-  echo "Success!"
+if echo "$RESULT" | jq -e '.error' > /dev/null 2>&1; then
+  echo "Failed: $(echo "$RESULT" | jq -r '.error')"
 else
-  echo "Failed: $(echo "$RESULT" | jq -r '.error.message')"
+  echo "Success: $(echo "$RESULT" | jq -r '.ts')"
 fi
 
 # Bad
@@ -443,7 +440,7 @@ agent-slack message send general "Hello"  # No error checking
 # Good - readable and maintainable
 agent-slack message send general "Hello"
 
-# Also good - use ID from snapshot
+# Also good — use ID from snapshot
 SNAPSHOT=$(agent-slack snapshot)
 CHANNEL_ID=$(echo "$SNAPSHOT" | jq -r '.channels[0].id')
 agent-slack message send "$CHANNEL_ID" "Hello"
@@ -471,7 +468,7 @@ done
 
 ```bash
 # Good - use threads for related messages
-PARENT_TS=$(agent-slack message send general "Task started" | jq -r '.data.ts')
+PARENT_TS=$(agent-slack message send general "Task started" | jq -r '.ts')
 agent-slack message send general "Step 1 complete" --thread "$PARENT_TS"
 agent-slack message send general "Step 2 complete" --thread "$PARENT_TS"
 
@@ -527,7 +524,7 @@ agent-slack message send general "Hello"
 # Continues even if it failed
 
 # Good
-if ! agent-slack message send general "Hello" | jq -e '.success' > /dev/null; then
+if agent-slack message send general "Hello" | jq -e '.error' > /dev/null 2>&1; then
   echo "Failed to send message"
   exit 1
 fi
@@ -547,6 +544,72 @@ for i in {1..100}; do
   MESSAGE="$MESSAGE\n$i. Item $i"
 done
 agent-slack message send general "$MESSAGE"
+```
+
+## Pattern: Schedule and Manage Messages
+
+**Use case**: Schedule a message for later delivery and manage the queue.
+
+```bash
+#!/bin/bash
+
+# Schedule a message for a specific time (Unix timestamp)
+SCHEDULED=$(agent-slack message schedule general "Weekly report" 1700000000)
+SCHED_ID=$(echo "$SCHEDULED" | jq -r '.id // .scheduled_message_id')
+
+# List all scheduled messages
+agent-slack message scheduled-list
+
+# Cancel a scheduled message
+agent-slack message scheduled-delete general "$SCHED_ID"
+```
+
+## Pattern: Channel Setup Automation
+
+**Use case**: Create a project channel and configure it.
+
+```bash
+#!/bin/bash
+
+PROJECT="project-alpha"
+
+# Create the channel
+CHANNEL=$(agent-slack channel create "$PROJECT")
+CHANNEL_ID=$(echo "$CHANNEL" | jq -r '.id')
+
+# Set topic and purpose
+agent-slack channel set-topic "$CHANNEL_ID" "Discussion for Project Alpha"
+agent-slack channel set-purpose "$CHANNEL_ID" "Coordinate development tasks for Alpha release"
+
+# Invite team members
+agent-slack channel invite "$CHANNEL_ID" "U001,U002,U003"
+
+# Add a useful bookmark
+agent-slack bookmark add "$CHANNEL_ID" "Project Wiki" "https://wiki.example.com/alpha"
+
+# Pin the welcome message
+WELCOME=$(agent-slack message send "$CHANNEL_ID" "Welcome to Project Alpha! 🎉")
+WELCOME_TS=$(echo "$WELCOME" | jq -r '.ts')
+agent-slack pin add "$CHANNEL_ID" "$WELCOME_TS"
+```
+
+## Pattern: Reminder Workflows
+
+**Use case**: Set reminders for follow-ups.
+
+```bash
+#!/bin/bash
+
+# Set a reminder for yourself
+agent-slack reminder add "Review the PR" 1700000000
+
+# Set a reminder for someone else
+agent-slack reminder add "Submit timesheet" 1700000000 --user U0ABC123
+
+# List and manage reminders
+agent-slack reminder list
+agent-slack reminder complete Rm001
+agent-slack reminder delete Rm002
 ```
 
 ## See Also

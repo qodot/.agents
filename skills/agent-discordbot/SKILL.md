@@ -1,7 +1,7 @@
 ---
 name: agent-discordbot
 description: Interact with Discord servers using bot tokens - send messages, read channels, manage reactions
-version: 1.13.1
+version: 2.9.0
 allowed-tools: Bash(agent-discordbot:*)
 metadata:
   openclaw:
@@ -158,6 +158,15 @@ agent-discordbot auth use <bot-id>
 agent-discordbot auth remove <bot-id>
 ```
 
+### Whoami Command
+
+```bash
+# Show current authenticated bot
+agent-discordbot whoami
+agent-discordbot whoami --pretty
+agent-discordbot whoami --bot <bot-id>
+```
+
 ### Server Commands
 
 ```bash
@@ -256,21 +265,30 @@ agent-discordbot thread archive <thread-id>
 
 ### Snapshot Command
 
-Get comprehensive server state for AI agents:
+Get server overview for AI agents (brief by default):
 
 ```bash
-# Full snapshot of current server
+# Brief snapshot (default) — fast, minimal API calls
 agent-discordbot snapshot
 
-# Filtered snapshots
-agent-discordbot snapshot --channels-only
-agent-discordbot snapshot --users-only
+# Full snapshot — includes messages and members (slow, large output)
+agent-discordbot snapshot --full
 
-# Limit messages per channel
-agent-discordbot snapshot --limit 10
+# Filtered full snapshots
+agent-discordbot snapshot --full --channels-only
+agent-discordbot snapshot --full --users-only
+
+# Limit messages per channel (only with --full)
+agent-discordbot snapshot --full --limit 10
 ```
 
-Returns JSON with:
+Default returns brief JSON with:
+
+- Server ID
+- Channels (id, name) — text channels only
+- Hint for next commands
+
+With `--full`, returns comprehensive JSON with:
 
 - Server metadata (id, name)
 - Channels (id, name, type, topic)

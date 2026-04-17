@@ -1,7 +1,7 @@
 ---
 name: agent-slack
 description: Interact with Slack workspaces - send messages, read channels, manage reactions
-version: 1.13.1
+version: 2.9.0
 allowed-tools: Bash(agent-slack:*)
 metadata:
   openclaw:
@@ -16,7 +16,7 @@ metadata:
 
 # Agent Slack
 
-A TypeScript CLI tool that enables AI agents and humans to interact with Slack workspaces through a simple command interface. Features seamless token extraction from the Slack desktop app and multi-workspace support.
+A TypeScript CLI tool that enables AI agents and humans to interact with Slack workspaces through a simple command interface. Features seamless token extraction from the Slack desktop app (with browser fallback) and multi-workspace support.
 
 ## Quick Start
 
@@ -33,11 +33,11 @@ agent-slack channel list
 
 ## Authentication
 
-Credentials are extracted automatically from the Slack desktop app on first use. No manual setup required — just run any command and authentication happens silently in the background.
+Credentials are extracted automatically from the Slack desktop app (or Chromium browser as fallback) on first use. No manual setup required — just run any command and authentication happens silently in the background.
 
 On macOS, the system may prompt for your Keychain password the first time (required to decrypt Slack's stored token). This is a one-time prompt.
 
-**IMPORTANT**: NEVER guide the user to open a web browser, use DevTools, or manually copy tokens from a browser. Always use `agent-slack auth extract` to obtain tokens from the desktop app.
+**IMPORTANT**: Always use `agent-slack auth extract` to obtain tokens. The CLI extracts from the desktop app first, falling back to Chromium browsers if the app isn't installed.
 
 ### Multi-Workspace Support
 
@@ -137,7 +137,7 @@ If a memorized ID returns an error (channel not found, user not found), remove i
 ### Auth Commands
 
 ```bash
-# Extract tokens from Slack desktop app (usually automatic)
+# Extract tokens from Slack desktop app or browser (usually automatic)
 agent-slack auth extract
 agent-slack auth extract --debug
 
@@ -148,6 +148,16 @@ agent-slack auth status
 agent-slack auth logout
 agent-slack auth logout <workspace-id>
 ```
+
+### Whoami Command
+
+```bash
+# Show current authenticated user
+agent-slack whoami
+agent-slack whoami --pretty
+```
+
+Output includes the authenticated user's identity information.
 
 ### Message Commands
 
@@ -185,6 +195,24 @@ agent-slack message update <channel> <ts> <new-text>
 
 # Delete a message
 agent-slack message delete <channel> <ts> --force
+
+# Schedule a message (post_at is a Unix timestamp)
+agent-slack message schedule <channel> <text> <post-at>
+agent-slack message schedule general "Friday update" 1700000000
+agent-slack message schedule general "Thread reply" 1700000000 --thread 1234567890.123456
+
+# List scheduled messages
+agent-slack message scheduled-list
+agent-slack message scheduled-list --channel general
+
+# Delete a scheduled message
+agent-slack message scheduled-delete <channel> <scheduled-message-id>
+
+# Post ephemeral message (visible only to a specific user)
+agent-slack message ephemeral <channel> <user-id> <text>
+
+# Get a permanent link to a message
+agent-slack message permalink <channel> <ts>
 ```
 
 ### Channel Commands
@@ -204,9 +232,39 @@ agent-slack channel info general
 # Get channel history (alias for message list)
 agent-slack channel history <channel> --limit 100
 
+# Open a DM channel with a user (returns channel ID)
+agent-slack channel open <user_id>
+agent-slack channel open U0ABC123
+
+# Open a group DM with multiple users
+agent-slack channel open U0ABC123,U0DEF456
+
 # List users in a channel
 agent-slack channel users <channel>
 agent-slack channel users general --include-bots
+
+# Create a new channel
+agent-slack channel create <name>
+agent-slack channel create my-new-channel --private
+
+# Archive a channel
+agent-slack channel archive <channel>
+
+# Set channel topic
+agent-slack channel set-topic <channel> <topic>
+
+# Set channel purpose
+agent-slack channel set-purpose <channel> <purpose>
+
+# Invite users to a channel (comma-separated user IDs)
+agent-slack channel invite <channel> <users>
+agent-slack channel invite general U0ABC123,U0DEF456
+
+# Join a channel
+agent-slack channel join <channel>
+
+# Leave a channel
+agent-slack channel leave <channel>
 ```
 
 ### User Commands
@@ -221,6 +279,18 @@ agent-slack user info <user>
 
 # Get current user
 agent-slack user me
+
+# Look up user by email
+agent-slack user lookup <email>
+agent-slack user lookup alice@example.com --pretty
+
+# Get detailed user profile
+agent-slack user profile <user-id>
+
+# Set your status (emoji name without colons)
+agent-slack user set-status <status-text>
+agent-slack user set-status "In a meeting" --emoji calendar
+agent-slack user set-status "On vacation" --emoji palm_tree --expiration 1700100000
 ```
 
 ### Reaction Commands
@@ -255,6 +325,9 @@ agent-slack file info <file-id>
 agent-slack file download <file-id>
 agent-slack file download <file-id> [output-path]
 agent-slack file download F0ABC123 ./downloads/
+
+# Delete a file
+agent-slack file delete <file-id>
 ```
 
 ### Unread Commands
@@ -286,6 +359,7 @@ agent-slack activity list --types thread_reply,message_reaction
 # List saved items
 agent-slack saved list
 agent-slack saved list --limit 10
+agent-slack saved list --cursor <next_cursor>
 ```
 
 ### Drafts Commands
@@ -293,7 +367,8 @@ agent-slack saved list --limit 10
 ```bash
 # List all drafts
 agent-slack drafts list
-agent-slack drafts list --pretty
+agent-slack drafts list --limit 10
+agent-slack drafts list --cursor <next_cursor>
 ```
 
 ### Channel Sections Commands
@@ -304,28 +379,130 @@ agent-slack sections list
 agent-slack sections list --pretty
 ```
 
-### Snapshot Command
-
-Get comprehensive workspace state for AI agents:
+### Pin Commands
 
 ```bash
-# Full snapshot
-agent-slack snapshot
+# Pin a message
+agent-slack pin add <channel> <ts>
 
-# Filtered snapshots
-agent-slack snapshot --channels-only
-agent-slack snapshot --users-only
+# Unpin a message
+agent-slack pin remove <channel> <ts>
 
-# Limit messages per channel
-agent-slack snapshot --limit 10
+# List pinned messages in a channel
+agent-slack pin list <channel>
+agent-slack pin list general --pretty
 ```
 
-Returns JSON with:
+### Bookmark Commands
+
+```bash
+# Add a bookmark to a channel
+agent-slack bookmark add <channel> <title> <link>
+agent-slack bookmark add general "Our Docs" https://docs.example.com --emoji books --type link
+
+# Edit a bookmark
+agent-slack bookmark edit <channel> <bookmark-id> --title "New Title"
+agent-slack bookmark edit <channel> <bookmark-id> --link https://new.example.com
+
+# Remove a bookmark
+agent-slack bookmark remove <channel> <bookmark-id>
+
+# List bookmarks in a channel
+agent-slack bookmark list <channel>
+agent-slack bookmark list general --pretty
+```
+
+### Reminder Commands
+
+```bash
+# Add a reminder (time is a Unix timestamp)
+agent-slack reminder add "Review PR" 1700000000
+agent-slack reminder add "Team standup" 1700000000 --user U0ABC123
+
+# List all reminders
+agent-slack reminder list
+agent-slack reminder list --pretty
+
+# Complete a reminder
+agent-slack reminder complete <reminder-id>
+
+# Delete a reminder
+agent-slack reminder delete <reminder-id>
+```
+
+### Usergroup Commands
+
+```bash
+# List all user groups
+agent-slack usergroup list
+agent-slack usergroup list --include-disabled
+agent-slack usergroup list --include-users --pretty
+
+# Create a user group
+agent-slack usergroup create "Marketing Team"
+agent-slack usergroup create "Marketing Team" --handle marketing-team --description "Marketing gurus"
+agent-slack usergroup create "Engineering" --channels C012ABC,C034DEF
+
+# Update a user group (name, handle, description, channels)
+agent-slack usergroup update <usergroup-id> --name "New Name"
+agent-slack usergroup update S0616NG6M --handle new-handle --description "Updated description"
+agent-slack usergroup update S0616NG6M --channels C012ABC,C034DEF
+
+# Enable a disabled user group
+agent-slack usergroup enable <usergroup-id>
+
+# Disable a user group
+agent-slack usergroup disable <usergroup-id>
+
+# List members of a user group
+agent-slack usergroup members <usergroup-id>
+agent-slack usergroup members S0616NG6M --include-disabled --pretty
+
+# Update members of a user group (replaces all members)
+agent-slack usergroup members-update <usergroup-id> <comma-separated-user-ids>
+agent-slack usergroup members-update S0616NG6M U060R4BJ4,U060RNRCZ
+```
+
+### Emoji Commands
+
+```bash
+# List all custom emoji in the workspace
+agent-slack emoji list
+agent-slack emoji list --pretty
+```
+
+### Snapshot Command
+
+Get workspace overview for AI agents (brief by default):
+
+```bash
+# Brief snapshot (default) — fast, minimal API calls
+agent-slack snapshot
+
+# Full snapshot — includes messages, users, user groups (slow, large output)
+agent-slack snapshot --full
+
+# Filtered full snapshots
+agent-slack snapshot --full --channels-only
+agent-slack snapshot --full --users-only
+
+# Limit messages per channel (only with --full)
+agent-slack snapshot --full --limit 10
+```
+
+Default returns brief JSON with:
 
 - Workspace metadata
-- Channels (id, name, topic, purpose)
+- Channels (id, name) — non-archived only
+- Hint for next commands
+
+With `--full`, returns comprehensive JSON with:
+
+- Workspace metadata
+- Channels (id, name, topic, purpose, is_private, is_archived)
 - Recent messages (ts, text, user, channel)
 - Users (id, name, profile)
+- User groups (id, name, handle, description, user_count, users)
 
 ## Output Format
 
@@ -381,13 +558,114 @@ Common errors:
 
 Credentials stored in `~/.config/agent-messenger/slack-credentials.json` (0600 permissions). See [references/authentication.md](references/authentication.md) for format and security details.
 
+## SDK: Real-Time Events
+
+`SlackListener` connects to Slack's RTM WebSocket for instant event streaming. No polling — events arrive in real time.
+
+### Setup
+
+```typescript
+import { SlackClient, SlackListener } from 'agent-messenger/slack'
+
+const client = await new SlackClient().login()
+const listener = new SlackListener(client)
+```
+
+Or with manual credentials:
+
+```typescript
+import { SlackClient, SlackListener } from 'agent-messenger/slack'
+
+const client = await new SlackClient().login({ token, cookie })
+const listener = new SlackListener(client)
+```
+
+### Listening for Events
+
+```typescript
+listener.on('connected', (info) => {
+  console.log(`Connected as ${info.self.id} on ${info.team.id}`)
+})
+
+listener.on('message', (event) => {
+  // event.type, event.channel, event.user, event.text, event.ts
+})
+
+listener.on('reaction_added', (event) => {
+  // event.user, event.reaction, event.item.channel, event.item.ts
+})
+
+listener.on('reaction_removed', (event) => {
+  // same shape as reaction_added
+})
+
+listener.on('member_joined_channel', (event) => {
+  // event.user, event.channel
+})
+
+listener.on('member_left_channel', (event) => {
+  // event.user, event.channel
+})
+
+listener.on('user_typing', (event) => {
+  // event.user, event.channel
+})
+
+listener.on('presence_change', (event) => {
+  // event.user, event.presence ('active' | 'away')
+})
+
+// Catch-all for any RTM event type
+listener.on('slack_event', (event) => {
+  // event.type + all fields
+})
+
+listener.on('error', (err) => {
+  console.error(err.message)
+})
+
+listener.on('disconnected', () => {
+  // auto-reconnects with exponential backoff
+})
+```
+
+### Lifecycle
+
+```typescript
+await listener.start()  // connects via RTM WebSocket
+listener.stop()         // clean shutdown
+```
+
+### Event Types
+
+| Event | Description |
+|-------|-------------|
+| `message` | New message, edit, delete, thread reply, join/leave subtypes |
+| `reaction_added` | Reaction added to a message |
+| `reaction_removed` | Reaction removed from a message |
+| `member_joined_channel` | User joined a channel |
+| `member_left_channel` | User left a channel |
+| `user_typing` | User is typing |
+| `presence_change` | User went active/away |
+| `channel_created` | New channel created |
+| `channel_deleted` | Channel deleted |
+| `channel_rename` | Channel renamed |
+| `channel_archive` | Channel archived |
+| `channel_unarchive` | Channel unarchived |
+| `slack_event` | Catch-all for every RTM event |
+| `connected` | WebSocket connected |
+| `disconnected` | WebSocket disconnected (auto-reconnects) |
+| `error` | Connection or API error |
+
+### Notes
+
+- Receives all workspace events for the authenticated user — no channel subscription needed
+- Auto-reconnects with exponential backoff (1s → 30s max)
+- Ping/pong keepalive every 30s
+- Uses Slack's RTM API with xoxc user tokens
+
 ## Limitations
 
-- No real-time events / Socket Mode
-- No channel management (create/archive)
-- No workspace admin operations
-- No scheduled messages
-- No user presence features
 - Plain text messages only (no blocks/formatting in v1)
 
 ## Troubleshooting

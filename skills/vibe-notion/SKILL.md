@@ -1,7 +1,7 @@
 ---
 name: vibe-notion
 description: Interact with Notion using the unofficial private API - pages, databases, blocks, search, users, comments
-version: 1.2.2
+version: 1.8.0
 allowed-tools: Bash(vibe-notion:*)
 metadata:
   openclaw:
@@ -284,6 +284,29 @@ vibe-notion database view-add <database_id> --workspace-id <workspace_id> --type
 # Delete a view from a database (cannot delete the last view)
 vibe-notion database view-delete <view_id> --workspace-id <workspace_id> --pretty
 ```
+
+### Table Commands
+
+Simple tables (non-database) — lightweight tables embedded in pages.
+
+```bash
+# Create a simple table with headers and optional rows
+vibe-notion table create <parent_id> --workspace-id <workspace_id> --headers "Name,Role,Score" --pretty
+vibe-notion table create <parent_id> --workspace-id <workspace_id> --headers "Name,Role,Score" --rows '[["Alice","Dev","95"],["Bob","PM","88"]]' --pretty
+vibe-notion table create <parent_id> --workspace-id <workspace_id> --headers "A,B" --after <block_id> --pretty
+vibe-notion table create <parent_id> --workspace-id <workspace_id> --headers "A,B" --before <block_id> --pretty
+
+# Add a row to a simple table
+vibe-notion table add-row <table_id> --workspace-id <workspace_id> --cells "Charlie,QA,92" --pretty
+
+# Update a single cell (row and col are 0-indexed, excluding header row)
+vibe-notion table update-cell <table_id> --workspace-id <workspace_id> --row 0 --col 1 --value "Lead" --pretty
+
+# Delete a row (0-indexed, excluding header row)
+vibe-notion table delete-row <table_id> --workspace-id <workspace_id> --row 0 --pretty
+```
+
+> **Simple tables vs databases**: Simple tables are inline, lightweight grids with no schema, filters, or views. Use `database` commands for structured data with typed properties, filtering, and sorting.
 
 ### Block Commands
 

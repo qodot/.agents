@@ -1,7 +1,7 @@
 ---
 name: agent-slackbot
 description: Interact with Slack workspaces using bot tokens - send messages, read channels, manage reactions
-version: 1.13.1
+version: 2.9.0
 allowed-tools: Bash(agent-slackbot:*)
 metadata:
   openclaw:
@@ -164,6 +164,15 @@ If a memorized ID returns an error (channel not found, user not found), remove i
 > Memory lets you skip repeated `channel list` and `auth list` calls. When you already know an ID from a previous session, use it directly.
 
 ## Commands
+
+### Whoami Command
+
+```bash
+# Show current authenticated bot
+agent-slackbot whoami
+agent-slackbot whoami --pretty
+agent-slackbot whoami --bot <bot-id>
+```
 
 ### Message Commands
 

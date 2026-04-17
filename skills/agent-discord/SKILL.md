@@ -1,7 +1,7 @@
 ---
 name: agent-discord
 description: Interact with Discord servers - send messages, read channels, manage reactions
-version: 1.13.1
+version: 2.9.0
 allowed-tools: Bash(agent-discord:*)
 metadata:
   openclaw:
@@ -16,7 +16,7 @@ metadata:
 
 # Agent Discord
 
-A TypeScript CLI tool that enables AI agents and humans to interact with Discord servers through a simple command interface. Features seamless token extraction from the Discord desktop app and multi-server support.
+A TypeScript CLI tool that enables AI agents and humans to interact with Discord servers through a simple command interface. Features seamless token extraction from the Discord desktop app (with browser fallback) and multi-server support.
 
 ## Quick Start
 
@@ -33,11 +33,11 @@ agent-discord channel list
 
 ## Authentication
 
-Credentials are extracted automatically from the Discord desktop app on first use. No manual setup required — just run any command and authentication happens silently in the background.
+Credentials are extracted automatically from the Discord desktop app (or Chromium browser as fallback) on first use. No manual setup required — just run any command and authentication happens silently in the background.
 
 On macOS, the system may prompt for your Keychain password the first time (required to decrypt Discord's stored token). This is a one-time prompt.
 
-**IMPORTANT**: NEVER guide the user to open a web browser, use DevTools, or manually copy tokens from a browser. Always use `agent-discord auth extract` to obtain tokens from the desktop app.
+**IMPORTANT**: Always use `agent-discord auth extract` to obtain tokens. The CLI extracts from the desktop app first, falling back to Chromium browsers if the app isn't installed.
 
 ### Multi-Server Support
 
@@ -134,7 +134,7 @@ If a memorized ID returns an error (channel not found, server not found), remove
 ### Auth Commands
 
 ```bash
-# Extract token from Discord desktop app (usually automatic)
+# Extract token from Discord desktop app or browser (usually automatic)
 agent-discord auth extract
 agent-discord auth extract --debug
 
@@ -144,6 +144,16 @@ agent-discord auth status
 # Logout from Discord
 agent-discord auth logout
 ```
+
+### Whoami Command
+
+```bash
+# Show current authenticated user
+agent-discord whoami
+agent-discord whoami --pretty
+```
+
+Output includes the authenticated user's identity information.
 
 ### Message Commands
 
@@ -308,21 +318,30 @@ agent-discord file info <channel-id> <file-id>
 
 ### Snapshot Command
 
-Get comprehensive server state for AI agents:
+Get server overview for AI agents (brief by default):
 
 ```bash
-# Full snapshot
+# Brief snapshot (default) — fast, minimal API calls
 agent-discord snapshot
 
-# Filtered snapshots
-agent-discord snapshot --channels-only
-agent-discord snapshot --users-only
+# Full snapshot — includes messages and members (slow, large output)
+agent-discord snapshot --full
 
-# Limit messages per channel
-agent-discord snapshot --limit 10
+# Filtered full snapshots
+agent-discord snapshot --full --channels-only
+agent-discord snapshot --full --users-only
+
+# Limit messages per channel (only with --full)
+agent-discord snapshot --full --limit 10
 ```
 
-Returns JSON with:
+Default returns brief JSON with:
+
+- Server metadata (id, name)
+- Channels (id, name) — text channels only
+- Hint for next commands
+
+With `--full`, returns comprehensive JSON with:
 
 - Server metadata (id, name)
 - Channels (id, name, type, topic)
@@ -397,9 +416,84 @@ Common errors:
 
 Credentials stored in `~/.config/agent-messenger/discord-credentials.json` (0600 permissions). See [references/authentication.md](references/authentication.md) for format and security details.
 
+## SDK: Programmatic Usage
+
+`DiscordClient` is available as a TypeScript SDK for building scripts and automations.
+
+### Setup
+
+```typescript
+import { DiscordClient } from 'agent-messenger/discord'
+
+const client = await new DiscordClient().login()
+```
+
+Or with manual credential management:
+
+```typescript
+import { DiscordClient, DiscordCredentialManager } from 'agent-messenger/discord'
+
+const manager = new DiscordCredentialManager()
+const token = await manager.getToken()
+if (!token) {
+  throw new Error('Discord token not found. Run auth extract first.')
+}
+const client = await new DiscordClient().login({ token })
+```
+
+### Example
+
+```typescript
+// Send a message
+const msg = await client.sendMessage(channelId, 'Hello from SDK!')
+
+// React to it
+await client.addReaction(channelId, msg.id, '👋')
+
+// Search messages
+const { results } = await client.searchMessages(serverId, 'deployment', {
+  sortBy: 'timestamp',
+  sortOrder: 'desc',
+  limit: 5,
+})
+
+// Create a thread
+const thread = await client.createThread(channelId, 'Discussion Topic')
+await client.sendMessage(thread.id, 'First message in thread')
+```
+
+### Real-Time Events (SDK)
+
+`DiscordListener` connects to Discord's Gateway WebSocket for instant event streaming:
+
+```typescript
+import { DiscordClient, DiscordListener, DiscordIntent } from 'agent-messenger/discord'
+
+const client = await new DiscordClient().login()
+const listener = new DiscordListener(client, {
+  intents: DiscordIntent.Guilds | DiscordIntent.GuildMessages | DiscordIntent.MessageContent,
+})
+
+listener.on('message_create', (event) => {
+  console.log(`${event.author.username}: ${event.content}`)
+})
+
+listener.on('error', (err) => console.error(err))
+
+await listener.start()
+// listener.stop()
+```
+
+Available events: `message_create`, `message_update`, `message_delete`, `message_reaction_add`, `message_reaction_remove`, `guild_member_add`, `guild_member_remove`, `typing_start`, `presence_update`, `channel_create`, `channel_update`, `channel_delete`, `discord_event` (catch-all), `connected`, `disconnected`, `error`.
+
+Note: `MessageContent`, `GuildMembers`, and `GuildPresences` are privileged intents — pass them explicitly via `options.intents`.
+
+### Full API Reference
+
+See the [Discord SDK documentation](https://agent-messenger.dev/docs/sdk/discord) for complete method signatures, types, schemas, and examples.
+
 ## Limitations
 
-- No real-time events / Gateway connection
 - No voice channel support
 - No server management (create/delete channels, roles)
 - No slash commands
