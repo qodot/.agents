@@ -154,6 +154,20 @@ PR 리뷰 스레드에 답글을 달 때는 반드시 `from agent: ` prefix를 �
 
 예시: `from agent: 지적 감사합니다. 해당 부분을 수정했습니다.`
 
+### 4-6. 재리뷰 요청 규칙
+
+리뷰 코멘트를 반영해 커밋/푸시한 뒤에는 원 리뷰어에게 재리뷰를 요청한다.
+
+1. 답글을 먼저 작성한다. 답글에는 반드시 `from agent: ` prefix를 붙인다.
+2. 수정 커밋을 push 한다.
+3. 코멘트를 남긴 사람 중 봇을 제외한 원 리뷰어 목록을 추출한다.
+4. PR이 draft 상태이면 재리뷰 요청 전에 사용자에게 draft 해제 여부를 확인한다. `gh pr edit --add-reviewer` 실행으로 draft가 해제될 수 있으므로 확인 없이 실행하지 않는다.
+5. PR이 ready 상태이면 원 리뷰어에게 재리뷰를 요청한다.
+   ```bash
+   gh pr edit {number} --add-reviewer {reviewer-login}
+   ```
+6. 완료 요약에 답글 작성 여부, push 여부, 재리뷰 요청 대상, PR draft/ready 상태를 포함한다.
+
 ## Phase 5: 완료 요약
 
 모든 항목 처리 후 결과를 요약합니다:
