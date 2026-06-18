@@ -1,1 +1,0 @@
-/Users/qodot/spray-connect-tools/ship-tracker/skills/17track/SKILL.md

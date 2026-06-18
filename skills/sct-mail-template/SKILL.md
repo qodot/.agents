@@ -1,1 +1,0 @@
-/Users/qodot/spray-connect-tools/sct/skills/sct-mail-template/SKILL.md

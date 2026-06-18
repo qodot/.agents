@@ -1,1 +1,0 @@
-/Users/qodot/spray-connect-tools/sct/skills/sct-init/SKILL.md
