@@ -1,7 +1,7 @@
 ---
 name: deploy
 description: indentcorp/backend 모노레포의 서비스(spray, socialscan, blaster)를 배포합니다. 릴리즈 드래프트에서 PR 목록을 추출하고, Slack #release-notice 채널에 배포 알림을 보낸 뒤, GitHub Actions CD 워크플로우를 트리거합니다. '배포해줘', 'deploy', '프로덕션 배포' 등 요청 시 활성화됩니다.
-allowed-tools: Bash(gh:*) Bash(agent-slack:*)
+allowed-tools: Bash(gh:*) Bash(agent-slackbot:*)
 ---
 
 # Deploy Skill
@@ -46,6 +46,9 @@ gh api repos/indentcorp/backend/releases --jq '.[] | select(.draft == true and (
 
 채널 ID: `C04ABEMS4PQ`
 
+배포 알림은 산나비 앱으로 전송한다. `--bot sanabi`로 등록된 봇을 명시한다.
+봇 인증이나 전송이 실패하면 오류를 보고하고 중단한다. qodot 사용자 인증으로 대신 전송하지 않는다.
+
 메시지 포맷:
 ```
 {service} 배포합니다.
@@ -63,7 +66,7 @@ socialscan 배포합니다.
 ```
 
 ```bash
-agent-slack message send C04ABEMS4PQ "{message}"
+agent-slackbot message send C04ABEMS4PQ "{message}" --bot sanabi
 ```
 
 ### Step 5. 배포 옵션 선택
