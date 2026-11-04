@@ -1,0 +1,3 @@
+interface:
+  display_name: "에픽 QA 요청"
+  short_description: "ella에게 피처 플래그를 허용하고 Slack으로 에픽 QA 요청"
