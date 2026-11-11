@@ -26,6 +26,10 @@ description: Use when drafting, revising, or sending a Slack 업무 종료 메�
 
 ## 출력 형식
 
+아래는 내용의 계층을 보여주는 예시다. 실제 Slack 전송과 수정에는 문자 `•`, `◦`, 공백 들여쓰기 대신 `blocks`의 `rich_text`와 `rich_text_list`를 사용한다. 프로젝트 목록은 `style: "bullet", indent: 0`, 각 프로젝트 바로 다음의 작업 목록은 `style: "bullet", indent: 1`로 구성한다. 항목은 `rich_text_section`으로 넣고, 제목 `업무 종료`는 목록 밖에 둔다.
+
+일반 텍스트만 받는 `agent-slack message send/update`로는 이 서식을 만들 수 없다. 연결된 Slack API 또는 기존 인증을 사용하는 Slack SDK의 `chat.postMessage`와 `chat.update`에 `blocks`를 전달한다. `text`는 알림과 접근성용 대체 텍스트로 유지한다. 전송 후 메시지를 다시 조회해 `rich_text_list`의 `style`과 `indent`가 저장됐는지 확인한다. [Slack 목록 서식 문서](https://docs.slack.dev/block-kit/formatting-with-rich-text/)를 참고한다.
+
 ```text
 업무 종료
 • 인덴트M
