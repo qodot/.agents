@@ -1,0 +1,4 @@
+interface:
+  display_name: "Metabase"
+  short_description: "메타베이스를 통한 Spray와 Blaster 운영 DB 조회 및 승인 후 변경"
+  default_prompt: "$metabase 스킬로 Spray 또는 Blaster 운영 DB를 조회하고 결과를 확인해줘."
