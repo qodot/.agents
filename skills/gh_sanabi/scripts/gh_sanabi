@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+import base64
+import datetime
+import fcntl
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.error
+import urllib.request
+
+
+def _encode(value):
+    return base64.urlsafe_b64encode(value).rstrip(b"=")
+
+
+def _request(path, jwt, body=None):
+    request = urllib.request.Request(
+        "https://api.github.com/" + path,
+        data=None if body is None else json.dumps(body).encode(),
+        headers={
+            "Authorization": "Bearer " + jwt,
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "User-Agent": "gh_sanabi",
+            "X-GitHub-Api-Version": "2026-03-10",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        return json.load(response)
+
+
+def _get_token(repository):
+    key_path = "/Users/qodot/workspace/qodot/codex-bridge/data/github-app.pem"
+    cache_directory = Path.home() / ".cache" / "gh_sanabi"
+    cache_directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    cache_path = cache_directory / (repository.replace("/", "--") + ".json")
+    lock_path = cache_path.with_suffix(".lock")
+    with os.fdopen(os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600), "r+") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if cache_path.exists():
+            cached = json.loads(cache_path.read_text())
+            expires_at = datetime.datetime.fromisoformat(cached["expires_at"].replace("Z", "+00:00"))
+            if expires_at.timestamp() > time.time():
+                return cached["token"]
+        token = _create_token(repository, key_path)
+        with tempfile.NamedTemporaryFile(mode="w", dir=cache_directory, delete=False) as cache:
+            json.dump(token, cache)
+        os.replace(cache.name, cache_path)
+        return token["token"]
+
+
+def _create_token(repository, key_path):
+    now = int(time.time())
+    header = _encode(b'{"alg":"RS256","typ":"JWT"}')
+    claims = _encode(json.dumps({"iat": now - 60, "exp": now + 300, "iss": "5344147"}).encode())
+    payload = header + b"." + claims
+    signature = subprocess.run(
+        ["openssl", "dgst", "-sha256", "-sign", key_path],
+        input=payload,
+        capture_output=True,
+        check=True,
+    ).stdout
+    jwt = (payload + b"." + _encode(signature)).decode()
+    installation = _request("repos/" + repository + "/installation", jwt)
+    return _request(
+        "app/installations/" + str(installation["id"]) + "/access_tokens",
+        jwt,
+        {"repositories": [repository.split("/")[1]]},
+    )
+
+
+if len(sys.argv) < 3 or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", sys.argv[1]):
+    sys.exit("사용법: gh_sanabi owner/repo <gh 인자...>")
+
+repository = sys.argv[1]
+try:
+    token = _get_token(repository)
+except urllib.error.HTTPError as error:
+    sys.exit(f"gh_sanabi: GitHub App 인증 실패 HTTP {error.code} ({repository})")
+except urllib.error.URLError as error:
+    sys.exit(f"gh_sanabi: GitHub 인증 요청 실패: {error.reason}")
+except (OSError, subprocess.CalledProcessError):
+    sys.exit("gh_sanabi: openssl 실행, 앱 개인 키와 토큰 캐시 접근 권한을 확인하세요.")
+except (KeyError, ValueError, TypeError):
+    sys.exit("gh_sanabi: GitHub 설치 인증 응답이 올바르지 않아요.")
+
+environment = dict(os.environ, GH_TOKEN=token, GH_HOST="github.com", GH_REPO=repository, GH_PROMPT_DISABLED="1")
+try:
+    os.execvpe("gh", ["gh", *sys.argv[2:]], environment)
+except OSError as error:
+    sys.exit(f"gh_sanabi: gh 실행 실패: {error.strerror}")
