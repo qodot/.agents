@@ -29,7 +29,8 @@ with args.path.with_suffix('.lock').open('a') as lock:
         user.update(count=0, blocked_until=0)
     duplicate = any(event['ts'] == args.ts for event in user['events'])
     blocked = user['blocked_until'] > now
-    if args.action == 'strike' and not duplicate and not blocked:
+    recorded = args.action == 'strike' and not duplicate and not blocked
+    if recorded:
         user['count'] += 1
         user['events'].append({'ts': args.ts, 'reason': args.reason, 'recorded_at': now})
         if user['count'] == 3:
@@ -45,4 +46,4 @@ with args.path.with_suffix('.lock').open('a') as lock:
         if os.path.exists(temporary):
             os.unlink(temporary)
     print(json.dumps({'count': user['count'], 'blocked_until': user['blocked_until'],
-                      'blocked': user['blocked_until'] > now, 'duplicate': duplicate}, ensure_ascii=False))
+                      'blocked': user['blocked_until'] > now, 'duplicate': duplicate, 'recorded': recorded}, ensure_ascii=False))

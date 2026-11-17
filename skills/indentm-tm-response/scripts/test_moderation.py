@@ -39,7 +39,8 @@ class ModerationTest(unittest.TestCase):
             self.assertEqual(len(json.loads(path.read_text())['UTEST']['events']), 4)
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
             with concurrent.futures.ThreadPoolExecutor() as pool:
-                list(pool.map(lambda n: call('strike', user='U_PARALLEL', ts=str(n)), range(6)))
+                results = list(pool.map(lambda n: call('strike', user='U_PARALLEL', ts=str(n)), range(6)))
+            self.assertEqual(sum(result['recorded'] for result in results), 3)
             self.assertEqual(call('check', user='U_PARALLEL')['count'], 3)
             path.write_text('{')
             result = subprocess.run([sys.executable, str(script), 'check', '--user', 'UTEST',
