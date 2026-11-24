@@ -27,10 +27,14 @@ description: 테스트를 설계, 작성, 수정, 리뷰, 정리하거나 실행
 
 - 테스트는 대상과 같은 패키지의 같은 디렉터리에 .test.ts 또는 .test.tsx로 둔다. 공통 설정은 test-setup.ts, DOM 설정은 test-setup-dom.ts를 따른다. bun run test:node, bun run test:dom과 브라우저 테스트는 현재 저장소 명령을 확인한다.
 - Bun 시간 제어는 bun:test의 jest.useFakeTimers()와 jest.advanceTimersByTime()을 사용한다. React 업데이트는 act 안에서 마친다. HappyDOM의 가상 타이머 전환 전에는 남은 실제 0ms 작업을 처리한다. 정리할 때 act 안에서 화면을 정리하고 가상 0ms 작업을 처리한 뒤 실제 타이머로 복원한다. 화면 타이머를 바꾸면 전체 DOM 테스트로 상호 영향을 확인한다.
-- DB 검증에는 postgres-test의 localhost:5433/icarus_test만 사용한다. 스키마는 bun run db:migrate:test로 준비한다. 캠페인과 세션의 권한 변경은 저장소 AGENTS.md의 소유자, admin, 미승인 사용자, 소속 불일치와 루트 목록 조건을 검증한다. 실행과 PR 검증은 icarus-git의 현행 규칙을 따른다.
+- DB 검증에는 postgres-test의 localhost:5433/icarus_test만 사용한다. 스키마는 bun run db:migrate:test로 준비한다. 캠페인과 세션 권한 변경의 검증 범위는 [api의 indentm 절](../api/SKILL.md#indentm)을 따른다. 실행과 PR 검증은 icarus-git의 현행 규칙을 따른다.
 
 ## Neoscan
 
 - 테스트는 lib/ 경로에 대응하는 test/ 아래에 _test.exs로 둔다. ExUnit 제목은 입력의 구체 조건과 관찰 결과를 쓴다. 성공은 “입력이 XX이면 XX 반환”, 실패는 “입력이 XX이면 XX한 에러 발생”으로 적는다. 공통 설정은 config/test.exs, 초기화는 test/test_helper.exs를 따른다.
 - mix test는 테스트 DB 생성과 마이그레이션을 수행한다. Spray Docker Compose의 db_test 서비스에 있는 localhost:25433/neoscan_test를 사용한다. MIX_TEST_PARTITION으로 분리할 수 있다. 공유 DATABASE_URL과 운영 DB는 사용하지 않는다.
-- 테스트용 Spray 테이블은 test/support/migrations/20261023090000_create_spray_ingest_tables.exs에서 관리한다. 기존 파일을 수정하고 새 테스트 DB나 새 파티션에서 스키마 생성과 테스트를 확인한다. 운영 Spray 테이블 변경은 Spray의 Django migration을 따른다. PR 전에는 저장소 Git 스킬에서 검증 명령을 확인한다.
+- 테스트용 Spray 테이블은 test/support/migrations/20261023090000_create_spray_ingest_tables.exs에서 관리한다. 기존 파일을 수정하고 새 테스트 DB나 새 파티션에서 스키마 생성과 테스트를 확인한다. 운영 제약 확인과 변경은 [db의 Neoscan 절](../db/SKILL.md#neoscan)을 따른다. PR 전에는 저장소 Git 스킬에서 검증 명령을 확인한다.
+
+## CreatorScout
+
+- 공개 순수 함수의 반환 데이터, 오류와 작업 구성을 실제 I/O 없이 검증한다. `_effect` 함수 자체는 테스트 대상에서 제외한다.

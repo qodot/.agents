@@ -25,10 +25,7 @@ description: Elixir 코드의 작성, 수정, 리뷰에 사용한다. 패턴 매
 
 ## Ecto와 Phoenix
 
-- 외부 입력의 cast와 내부 값의 변경을 구분한다. 작업별 허용 필드와 필드 간 검증을 확인한다. 검증과 DB 제약은 별도로 보며 동시 중복에는 실제 고유 제약과 충돌 처리를 대조한다.
-- 외부 쿼리 값은 바인딩한다. 목록 안의 반복 조회, 조인으로 늘어나는 행, 페이지 정렬과 동률 기준을 확인한다. preload의 전역 limit를 부모별 제한으로 간주하지 않는다. 인덱스는 실제 실행 계획과 소유 마이그레이션에서 확인한다.
-- 트랜잭션에서 느린 외부 I/O를 기다리는지 확인한다. 커밋 뒤 후처리 오류는 이미 성공한 저장과 구분한다. 롤백과 예외 변환도 구분한다. 일괄 쓰기와 upsert는 고유 제약, 갱신 대상, 검증, 타임스탬프를 확인한다.
-- 마이그레이션은 테이블 소유자, 기존 중복과 NULL, 잠금, 재실행과 복구 가능성을 확인한다. DB 락은 실제 경쟁과 요구사항 위반이 확인될 때 검토한다.
+- Ecto에서는 외부 입력의 cast와 내부 값 변경을 구분한다. 작업별 허용 필드와 필드 간 검증을 확인한다. preload의 전역 limit를 부모별 제한으로 간주하지 않는다. 쿼리, DB 제약과 트랜잭션에는 [db](../db/SKILL.md)를 적용한다.
 - Phoenix 컨트롤러는 입력 파싱, 도메인 호출과 HTTP 응답을 담당한다. 인증은 실제 라우트와 Plug 파이프라인에서 확인한다. LiveView는 이벤트 입력과 권한, 재연결을 검증하고 큰 목록에는 streams를 검토한다.
 
 ## 매크로와 외부 입력
@@ -42,6 +39,10 @@ description: Elixir 코드의 작성, 수정, 리뷰에 사용한다. 패턴 매
 - 전체 검토는 소스, 테스트, 설정, 마이그레이션, 템플릿과 CI의 확인 범위를 기록한다. 호출자, behaviour, 동적 호출과 실제 입력을 확인하고 문제의 위치, 원인, 재현 조건과 영향을 보고한다. 실행하지 않은 검사와 확인하지 않은 범위를 표시한다.
 - 지연은 쿼리, DB 연결 대기, 외부 요청, 메일박스와 실행 시간을 나눠 확인한다. 메모리는 프로세스, ETS, 메일박스, binary 참조와 수명을 추적한다. 타입 경고와 Credo, Dialyzer 결과는 설치 버전과 활성 규칙에 맞춰 해석한다.
 
-Neoscan의 모듈 이름 공간, 오류 반환, 테이블 소유권과 테스트 DB는 저장소 AGENTS.md와 test의 Neoscan 절을 따른다.
+## Neoscan
+
+- 모듈은 `Neoscan` 또는 `NeoscanWeb` 이름 공간에 둔다. 프로토콜 구현과 `Mix.Tasks` 등 이름이 정해진 확장 지점은 예외다.
+- 로그는 `inspect(__MODULE__)`, 입력, 결과 순서로 쓰고 입력과 결과는 `key=value`로 표시한다. 결과에 `event`를 두고 해당하는 `code`, `status`, `message`를 함께 적는다. 문자열은 `inspect/1`로 이스케이프한다. 실패 시 문제를 식별할 입력은 남기고 인증 키와 토큰은 제외한다.
+- 오류 반환은 [function의 Neoscan 절](../function/SKILL.md#neoscan), 테스트 DB는 [test의 Neoscan 절](../test/SKILL.md#neoscan)을 따른다.
 
 원문은 [Elixir 안티패턴](https://hexdocs.pm/elixir/what-anti-patterns.html), [Ecto](https://hexdocs.pm/ecto/), [Phoenix](https://hexdocs.pm/phoenix/)를 참고한다.
