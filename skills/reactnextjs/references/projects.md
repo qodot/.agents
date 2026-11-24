@@ -2,7 +2,7 @@
 
 해당 프로젝트의 최신 지침과 변경 대상 디렉터리를 먼저 확인한다. 아래 내용은 로컬 지침에서 수집한 적용 범위와 시행 규칙이다.
 
-## Icarus
+## indentm
 
 - `design-system/tokens.css`를 단일 토큰 원본으로 쓰고 `grid.md`에 있는 `PageShell`을 새 화면의 기본 데스크톱 셸로 사용한다. 반응형 패널, `NavigationBar`, 모바일 safe area와 화면 폭은 `grid.md`를 확인한다.
 - Base UI와 Tailwind v4, Phosphor 및 등록된 아이콘을 쓴다. variant, size, state를 기존 클래스 맵과 토큰으로 표현한다. 패널 헤더는 `PanelTitle`, 카드 헤더는 `CardTitle`, 폼 바로 위 레이블은 `Field`를 확인한다. 본문은 `Article`이나 `article` 유틸을 쓰고 외부 HTML과 사용자 글에는 필요한 경우 `[overflow-wrap:anywhere]`를 추가한다. 한국어 어절 줄바꿈, 일본어 금칙, 텍스트 선택 정책은 `design-system/index.md`를 확인한다.
@@ -10,8 +10,11 @@
 - `design-system/copy.md`가 제품과 카탈로그 문구의 원본이다. Primary 버튼은 `~하기`, 다른 버튼 variant와 메뉴, 행 액션, 다이얼로그 confirm/cancel은 명사형을 사용한다. 아이콘 버튼과 동적 레이블은 가능한 `대상 + 명사형`을 사용한다. `다시 시도`는 고정 레이블이다. 에러와 경고는 합쇼체, 안내와 완료, 빈 상태는 해요체를 쓴다. 문구와 번역 변경은 `ux-writing`과 용어표를 확인한다.
 - 내부 웹 API 하나당 `apps/web/src/lib`의 요청 파일 하나를 대응시킨다. API 라우트와 도메인, 액션 파일명을 맞추고 동적 ID는 파일 경로에서 뺀다. 요청 함수는 첫 인자로 네트워크 클라이언트, 다음 인자로 입력을 받는다. 파일에서 스키마로 응답을 파싱하고 타입을 추론해 성공과 실패를 기존 `Result`로 반환한다. 도메인, HTTP 스키마, 웹 요청 타입의 소유 위치를 지키고 신규 코드에 레거시 `packages/shared` 의존을 추가하지 않는다.
 - API 또는 코어 변경에 권한이 걸리면 캠페인과 세션의 기존 권한 함수 및 미들웨어를 따른다. 소유자와 admin을 허용하고, 하위 리소스의 캠페인 또는 세션 소속은 별도로 검사한다. 루트 목록은 admin도 본인 소유만 돌려준다. 실행자와 리소스 소유자를 섞지 않고 미들웨어가 보장한 검사를 중복하지 않는다.
-- `icarus-testing`을 따른다. 한글 테스트 제목, 구현 옆 `.test.ts` 또는 `.test.tsx`, import → 테스트 → fixture/헬퍼 순서, 공개 함수 테스트, 주입한 I/O만 모킹하는 규칙을 적용한다. Bun의 `jest.useFakeTimers()`와 `jest.advanceTimersByTime()`를 사용한다. HappyDOM은 전환 전의 실제 0ms 작업과 정리 때의 가상 0ms 작업을 처리하고 `act` 안에서 정리한 뒤 실제 타이머로 복원한다. 해당 변경은 같은 프로세스에 관련 테스트를 모아 검증한다.
+- 공용 test 스킬의 indentm 절을 적용한다.
 - DOM 테스트에 `test-setup-dom.ts`, 공통 env에 `test-setup.ts`를 사용하고 실제 DB가 필요한 테스트는 `localhost:5433/icarus_test`와 `bun run db:migrate:test`를 사용한다. PR 검증은 `icarus-git`의 최종 diff, convention-fixup, 로컬 CI 규칙을 따른다. 공용 `CLAUDE.md`의 Bun HTML imports 예시는 실제 Next.js 앱의 App Router나 빌드 스크립트를 대체하는 지침으로 쓰지 않는다.
+
+- 크리에이터의 poolGroup과 view를 클라이언트만 읽는 같은 화면에서는 History API를 사용한다. 다른 발송 그룹 경로에서 진입할 때는 라우터를 사용한다. [#3808](https://github.com/indentcorp/icarus/pull/3808)
+- 풀 그룹 전환과 브라우저 이력 이동은 페이지 요청 없이 해당 그룹 목록을 한 번 조회한다. 전체 집계는 CampaignCreatorsDataProvider가 소유하며 그룹 전환과 독립적으로 갱신한다. [#3809](https://github.com/indentcorp/icarus/pull/3809)
 
 ## Huxley
 
