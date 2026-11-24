@@ -1,0 +1,4 @@
+interface:
+  display_name: "React 및 Next.js"
+  short_description: "React 및 Next.js 구현, 리뷰, 테스트에 프로젝트 지침 적용"
+  default_prompt: "$reactnextjs를 사용해서 이 React 또는 Next.js 변경을 검토하고 검증해 줘."
